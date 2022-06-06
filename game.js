@@ -5,6 +5,7 @@ import { Entity } from "./entity.js";
 import { EventHandler } from "./eventHandler.js";
 import { Map } from "./map.js";
 import { Player } from "./player.js";
+import { generateDungeon } from "./procgen.js";
 
 export class Game {
 
@@ -50,7 +51,7 @@ export class Game {
 
 		this.entities = new Set([this.player, npc]);
 
-		this.map = new Map(this.map_width, this.map_height);
+		this.map = generateDungeon(this.map_width, this.map_height);
 
 		this.engine.start();
 
