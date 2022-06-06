@@ -13,15 +13,10 @@ export class Map {
 		this.height = height;
 
 		this.tiles = this.generateMap(this.width, this.height);
-
-		this.tiles[22][30] = Tile.wallTile;
-		this.tiles[22][31] = Tile.wallTile;
-		this.tiles[22][32] = Tile.wallTile;
-		this.tiles[22][33] = Tile.wallTile;
 	}
 
 	generateMap(width, height) {
-		let tiles = Array.from(Array(height), () => new Array(width).fill(Tile.floorTile));
+		let tiles = Array.from(Array(height), () => new Array(width).fill(Tile.wallTile));
 
 		return tiles;
 	}
