@@ -40,18 +40,20 @@ export class Game {
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
 
-		this.player = new Player(Math.floor(this.screen_width / 2), Math.floor(this.screen_height / 2), "@", new Color(255, 255, 255), this);
+		let x = Math.floor(this.screen_width / 2);
+		let y = Math.floor(this.screen_height / 2);
+
+		this.player = new Player(x, y, "@", new Color(255, 255, 255), new Color(200, 180, 50), this);
+		let npc = new Entity(x - 5, y, "@", new Color(255, 255, 0), new Color(200, 180, 50), this);
 		
 		this.eventHandler = new EventHandler(this);
-
-		let npc = new Entity(Math.floor(this.screen_width / 2 - 5), Math.floor(this.screen_height / 2), "@", new Color(255, 255, 0), this);
 
 		this.scheduler.add(this.player, true);
 		this.scheduler.add(npc, true);
 
 		this.entities = new Set([this.player, npc]);
 
-		this.map = generateDungeon(this.map_width, this.map_height);
+		this.map = generateDungeon(this.map_width, this.map_height, this.player, this.entities);
 
 		this.engine.start();
 
@@ -61,12 +63,5 @@ export class Game {
 	refresh() {
 		this.display.clear();
 		this.map.render(this.display);
-		this.renderEntities();
-	}
-
-	renderEntities() {
-		this.entities.forEach(entity => {
-			this.display.draw(entity.x, entity.y, entity.character, entity.color.colorStr);
-		});
 	}
 }

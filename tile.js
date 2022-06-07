@@ -3,40 +3,54 @@
 import { Color } from "./color.js";
 import { Glyph } from "./glyph.js";
 
-export class Tile extends Glyph {
+export class Tile {
 
 	walkable;
 	transparent;
 
+	glyph;
+
 	constructor({
 		walkable = false,
 		transparent = false,
-		...properties
+		glyphProperties = {}
 	} = {}) {
-		
-		super(properties);
 
 		this.walkable = walkable;
 		this.transparent = transparent;
+
+		this.glyph = new Glyph(glyphProperties);
 	}
 }
 
 Tile.nullTile = new Tile();
 
 Tile.floorTile = new Tile({
-	character: ' ',
-	foreground: new Color(255, 255, 255),
-	background: new Color(50, 50, 150),
+	glyphProperties: {
+		character: ' ',
+		foreground: new Color(255, 255, 255),
+		background: new Color(200, 180, 50),
+		hasDarkGlyph: true,
+		darkProperties: {
+			foreground: new Color(255, 255, 255),
+			background: new Color(50, 50, 150)
+		}
+	},
 	walkable: true,
-	transparent: true,
-	hasDarkGlyph: false
+	transparent: true
 });
 
 Tile.wallTile = new Tile({
-	character: ' ',
-	foreground: new Color(255, 255, 255),
-	background: new Color(0, 0, 100),
+	glyphProperties: {
+		character: ' ',
+		foreground: new Color(255, 255, 255),
+		background: new Color(130, 110, 50),
+		hasDarkGlyph: true,
+		darkProperties: {
+			foreground: new Color(255, 255, 255),
+			background: new Color(0, 0, 100)
+		}
+	},
 	walkable: false,
-	transparent: false,
-	hasDarkGlyph: false
+	transparent: false
 });

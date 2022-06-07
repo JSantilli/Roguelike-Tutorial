@@ -1,19 +1,25 @@
 'use strict';
 
+import { Glyph } from "./glyph.js";
+
 export class Entity {
 
 	x;
 	y;
-	character;
-	color;
+	
+	glyph;
 	
 	game;
 
-	constructor(x, y, character, color, game) {
+	constructor(x, y, character, foreground, background, game) {
 		this.x = x;
 		this.y = y;
-		this.character = character;
-		this.color = color;
+		
+		this.glyph = new Glyph({
+			character: character,
+			foreground: foreground,
+			background: background
+		});
 
 		this.game = game;
 	}
@@ -42,6 +48,6 @@ export class Entity {
 	}
 
 	draw() {
-		this.game.display.draw(this.x, this.y, this.character, this.color.colorStr);
+		this.game.display.draw(this.x, this.y, this.glyph.character, this.glyph.foreground.colorStr, this.glyph.background.colorStr);
 	}
 }

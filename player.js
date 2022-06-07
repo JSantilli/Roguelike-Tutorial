@@ -4,8 +4,8 @@ import { Entity } from "./entity.js";
 
 export class Player extends Entity {
 
-	constructor(x, y, character, color, game) {
-		super(x, y, character, color, game);
+	constructor(x, y, character, foreground, background, game) {
+		super(x, y, character, foreground, background, game);
 	}
 
 	act() {
