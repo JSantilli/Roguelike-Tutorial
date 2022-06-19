@@ -4,17 +4,34 @@ import { Glyph } from "./glyph.js";
 
 export class Entity {
 
+	name;
+
 	x;
 	y;
+
+	blocksMovement;
 	
 	glyph;
-	
+
 	game;
 
-	constructor(x, y, character, foreground, background, game) {
-		this.x = x;
-		this.y = y;
-		
+	actFunction;
+
+	constructor({
+		name = "<Unnamed>",
+		character = "?",
+		foreground,
+		background,
+		blocksMovement = false,
+		game,
+		actFunction = () => {return;} // TODO: this needs to be a mixin instead
+
+	} = {}) {
+
+		this.name = name;
+
+		this.blocksMovement = blocksMovement;
+
 		this.glyph = new Glyph({
 			character: character,
 			foreground: foreground,
@@ -22,32 +39,23 @@ export class Entity {
 		});
 
 		this.game = game;
+
+		this.actFunction = actFunction;
 	}
 
 	setPosition(x, y) {
+		let oldX = this.x;
+		let oldY = this.y;
+
 		this.x = x;
 		this.y = y;
-	}
 
-	tryMove(direction) {
-		const [dx, dy] = direction;
-		const new_x = this.x + dx;
-		const new_y = this.y + dy;
-
-		if (!this.game.map.isInBounds(new_x, new_y)) {
-			return;
-		} else if (!this.game.map.getTile(new_x, new_y).walkable) {
-			return;
+		if (this.game.map) {
+			this.game.map.updateEntityPosition(this, oldX, oldY);
 		}
-
-		this.setPosition(new_x, new_y);
 	}
 
 	act() {
-		//
-	}
-
-	draw() {
-		this.game.display.draw(this.x, this.y, this.glyph.character, this.glyph.foreground.colorStr, this.glyph.background.colorStr);
+		this.actFunction();
 	}
 }

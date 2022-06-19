@@ -1,25 +1,30 @@
 'use strict';
 
 import { Color } from "./color.js";
+import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
 import { EventHandler } from "./eventHandler.js";
-import { Map } from "./map.js";
-import { Player } from "./player.js";
-import { generateDungeon } from "./procgen.js";
+import { Factory } from "./factory.js";
+import { generateDungeon, placeEntities } from "./procgen.js";
 
 export class Game {
 
 	screen_width;
 	screen_height;
+
 	map_width;
 	map_height;
+	
 	display;
 	scheduler;
 	engine;
-	player;
+	
 	eventHandler;
-	entities;
+	
 	map;
+	maxMonstersPerRoom; // TODO: does this really need to be defined on the Game?
+
+	entityFactory;
 
 	constructor() {
 		this.screen_width = 80;
@@ -27,6 +32,8 @@ export class Game {
 
 		this.map_width = 80;
 		this.map_height = 45;
+
+		this.maxMonstersPerRoom = 2;
 
 		let displayOptions = {
 			width: this.screen_width,
@@ -39,24 +46,20 @@ export class Game {
 
 		this.scheduler = new ROT.Scheduler.Simple();
 		this.engine = new ROT.Engine(this.scheduler);
+	}
 
-		let x = Math.floor(this.screen_width / 2);
-		let y = Math.floor(this.screen_height / 2);
+	start() {
 
-		this.player = new Player(x, y, "@", new Color(255, 255, 255), new Color(200, 180, 50), this);
-		let npc = new Entity(x - 5, y, "@", new Color(255, 255, 0), new Color(200, 180, 50), this);
-		
 		this.eventHandler = new EventHandler(this);
 
-		this.scheduler.add(this.player, true);
-		this.scheduler.add(npc, true);
+		this.entityFactory = new Factory(Entity, this);
+		defineEntities(this.entityFactory);
+		
+		this.map = generateDungeon(this.map_width, this.map_height);
 
-		this.entities = new Set([this.player, npc]);
-
-		this.map = generateDungeon(this.map_width, this.map_height, this.player, this.entities);
+		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
 
 		this.engine.start();
-
 		this.refresh();
 	}
 

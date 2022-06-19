@@ -1,5 +1,7 @@
 'use strict';
 
+import { BumpAction, MoveAction } from "./action.js";
+
 export class EventHandler {
 
 	game;
@@ -25,12 +27,14 @@ export class EventHandler {
 	}
 
 	event_keydown(e) {
-		let keyCode = e.keyCode;
+		const keyCode = e.keyCode;
 
 		if (!(keyCode in this.keyMap)) { return; } // invalid input
 
-		let direction = ROT.DIRS[4][this.keyMap[keyCode]];
-		this.game.player.tryMove(direction);
+		const [dx, dy] = ROT.DIRS[4][this.keyMap[keyCode]];
+
+		let action = new BumpAction(dx, dy);
+		action.perform(this.game.map, this.game.map.player);
 		
 		this.game.engine.unlock();
 	}

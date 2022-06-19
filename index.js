@@ -3,5 +3,6 @@
 import { Game } from "./game.js";
 
 window.onload = function() {
-	new Game();
+	const game = new Game();
+	game.start();
 };
