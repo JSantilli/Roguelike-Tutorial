@@ -10,23 +10,30 @@ export class Map {
 
 	explored;
 
+	digger;
+
 	player;
 	entities;
 
 	fov;
 
-	constructor(width, height, player, entities) {
+	constructor(width, height, digger) {
 		this.width = width;
 		this.height = height;
 
 		[this.tiles, this.explored] = this.generateMap(this.width, this.height);
 
-		this.player = player;
-		this.entities = entities;
+		this.digger = digger;
+
+		this.entities = {};
 
 		this.fov = new ROT.FOV.PreciseShadowcasting(function(x, y) {
 			return this.getTile(x, y).transparent;
 		}.bind(this));
+	}
+
+	setPlayer(player) {
+		this.player = player;
 	}
 
 	generateMap(width, height) {
@@ -64,20 +71,44 @@ export class Map {
 	}
 
 	getEntityAt(x, y) {
-		for (let entity of this.entities) {
-			if (entity.x == x && entity.y == y) {
-				return entity;
+		return this.entities[x + "," + y];
+	}
+
+	addEntity(entity) {
+		this.addEntityAt(entity, entity.x, entity.y);
+	}
+
+	addEntityAt(entity, x, y) {
+		entity.x = x;
+		entity.y = y;
+		const key = entity.x + "," + entity.y;
+		this.entities[key] = entity;
+	}
+
+	// BUG: Currently only one entity can exist in a tile at a time
+	updateEntityPosition(entity, oldX, oldY) {
+		delete this.entities[oldX + "," + oldY];
+
+		if (this.isInBounds(entity.x, entity.y)) {
+			if (this.isEmptyFloor(entity.x, entity.y)) {
+				this.addEntity(entity);
 			}
 		}
-		return null;
+	}
+
+	isEmptyFloor(x, y) {
+		return !this.getEntityAt(x, y);
 	}
 
 	render(display) {
 
 		let visibleCells = {};
 
+		// TODO: it would be cool to somehow remove the player reference from this
+		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
+		//	Could be interesting for having an fov of a security camera or something like it
 		this.fov.compute(this.player.x, this.player.y, 8, function(x, y, r, visibility) {
-			visibleCells[x + "," + y] = true
+			visibleCells[x + "," + y] = true;
 			this.setExplored(x, y, true);
 		}.bind(this));
 
