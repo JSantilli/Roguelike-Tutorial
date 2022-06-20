@@ -1,6 +1,14 @@
 'use strict';
 
 export class Action {
+
+	entity;
+	map;
+
+	constructor(entity) {
+		this.entity = entity;
+		this.map = this.entity.map;
+	}
 	
 	perform() {}
 }
@@ -9,12 +17,17 @@ export class ActionWithDirection extends Action {
 	
 	dx;
 	dy;
+	dest_x;
+	dest_y;
 	
-	constructor(dx, dy) {
-		super();
+	constructor(entity, dx, dy) {
+		super(entity);
 		
 		this.dx = dx;
 		this.dy = dy;
+
+		this.dest_x = this.entity.x + this.dx;
+		this.dest_y = this.entity.y + this.dy;
 	}
 
 	perform() {}
@@ -22,51 +35,42 @@ export class ActionWithDirection extends Action {
 
 export class BumpAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
-
-		if (map.getEntityAt(dest_x, dest_y) && map.getEntityAt(dest_x, dest_y).blocksMovement) {
+	perform() {
+		if (this.map.getBlockingEntity(this.dest_x, this.dest_y)) {
 			// Melee attack against target
-			return new MeleeAction(this.dx, this.dy).perform(map, entity);
+			return new MeleeAction(this.entity, this.dx, this.dy).perform();
 		} else {
-			return new MoveAction(this.dx, this.dy).perform(map, entity);
+			return new MoveAction(this.entity, this.dx, this.dy).perform();
 		}
 	}
 }
 
 export class MoveAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
-
-		if (!map.isInBounds(dest_x, dest_y)) {
+	perform() {
+		if (!this.map.isTileInBounds(this.dest_x, this.dest_y)) {
 			// Destination out of bounds
 			return;
 		}
 
-		if (!map.getTile(dest_x, dest_y).walkable) {
+		if (!this.map.isTileWalkable(this.dest_x, this.dest_y)) {
 			// Destination is not walkble
 			return;
 		}
 
-		if (map.getEntityAt(dest_x, dest_y) && map.getEntityAt(dest_x, dest_y).blocksMovement) {
+		if (this.map.getBlockingEntity(this.dest_x, this.dest_y)) {
 			// Destination contains an entity that blocks movement
 			return;
 		}
 
-		entity.setPosition(dest_x, dest_y);
+		this.entity.setPosition(this.dest_x, this.dest_y);
 	}
 }
 
 export class MeleeAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
-
-		let target = map.getEntityAt(dest_x, dest_y);
+	perform() {
+		let target = this.map.getEntityAt(this.dest_x, this.dest_y);
 
 		if (!target) {
 			return;

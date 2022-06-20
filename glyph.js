@@ -11,7 +11,7 @@ export class Glyph {
 
 	constructor({
 		character = ' ',
-		foreground = new Color(255, 255, 255),
+		foreground = new Color(0, 0, 0),
 		background = new Color(0, 0, 0),
 		hasDarkGlyph = false,
 		darkGlyph = null,

@@ -5,13 +5,13 @@ export class Factory {
 	type;
 	templates;
 
-	game;
+	map;
 
-	constructor(type, game) {
+	constructor(type, map) {
 		this.type = type;
 		this.templates = {};
 		
-		this.game = game;
+		this.map = map;
 	}
 
 	define(name, template) {

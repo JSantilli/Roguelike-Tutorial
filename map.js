@@ -12,6 +12,8 @@ export class Map {
 
 	digger;
 
+	game;
+
 	player;
 	entities;
 
@@ -32,6 +34,10 @@ export class Map {
 		}.bind(this));
 	}
 
+	setGame(game) {
+		this.game = game;
+	}
+
 	setPlayer(player) {
 		this.player = player;
 	}
@@ -44,14 +50,14 @@ export class Map {
 	}
 
 	getTile(x, y) {
-		if (!this.isInBounds(x, y)) {
+		if (!this.isTileInBounds(x, y)) {
 			return Tile.nullTile;
 		} else {
 			return this.tiles[x][y] || Tile.nullTile;
 		}
 	}
 
-	isExplored(x, y) {
+	isTileExplored(x, y) {
 		if (this.getTile(x, y) !== Tile.nullTile) {
 			return this.explored[x + "," + y];
 		} else {
@@ -60,13 +66,17 @@ export class Map {
 		
 	}
 
-	setExplored(x, y, explored) {
+	setTileExplored(x, y, explored) {
 		if (this.getTile(x, y) !== Tile.nullTile) {
 			this.explored[x + "," + y] = explored;
 		}
 	}
 
-	isInBounds(x, y) {
+	isTileWalkable(x, y) {
+		return this.getTile(x, y).walkable;
+	}
+
+	isTileInBounds(x, y) {
 		return (x >= 0 && x < this.width && y >= 0 && y < this.height);
 	}
 
@@ -89,15 +99,24 @@ export class Map {
 	updateEntityPosition(entity, oldX, oldY) {
 		delete this.entities[oldX + "," + oldY];
 
-		if (this.isInBounds(entity.x, entity.y)) {
-			if (this.isEmptyFloor(entity.x, entity.y)) {
+		if (this.isTileInBounds(entity.x, entity.y)) {
+			if (this.isEmptyTile(entity.x, entity.y)) {
 				this.addEntity(entity);
 			}
 		}
 	}
 
-	isEmptyFloor(x, y) {
+	isEmptyTile(x, y) {
 		return !this.getEntityAt(x, y);
+	}
+
+	getBlockingEntity(x, y) {
+		const entity = this.getEntityAt(x, y);
+		if (entity && entity.blocksMovement) {
+			return entity;
+		} else {
+			return null;
+		}
 	}
 
 	render(display) {
@@ -109,13 +128,13 @@ export class Map {
 		//	Could be interesting for having an fov of a security camera or something like it
 		this.fov.compute(this.player.x, this.player.y, 8, function(x, y, r, visibility) {
 			visibleCells[x + "," + y] = true;
-			this.setExplored(x, y, true);
+			this.setTileExplored(x, y, true);
 		}.bind(this));
 
 		for (let x = 0; x < this.tiles.length; x++) {
 			const column = this.tiles[x];
 			for (let y = 0; y < column.length; y++) {
-				if (this.isExplored(x, y)) {
+				if (this.isTileExplored(x, y)) {
 					let tile = this.getTile(x, y);
 					let glyph = tile.glyph;
 					if (!visibleCells[x + "," + y]) {

@@ -13,7 +13,7 @@ export class Entity {
 	
 	glyph;
 
-	game;
+	map;
 
 	actFunction;
 
@@ -23,7 +23,7 @@ export class Entity {
 		foreground,
 		background,
 		blocksMovement = false,
-		game,
+		map,
 		actFunction = () => {return;} // TODO: this needs to be a mixin instead
 
 	} = {}) {
@@ -38,7 +38,7 @@ export class Entity {
 			background: background
 		});
 
-		this.game = game;
+		this.map = map;
 
 		this.actFunction = actFunction;
 	}
@@ -50,12 +50,12 @@ export class Entity {
 		this.x = x;
 		this.y = y;
 
-		if (this.game.map) {
-			this.game.map.updateEntityPosition(this, oldX, oldY);
+		if (this.map) {
+			this.map.updateEntityPosition(this, oldX, oldY);
 		}
 	}
 
 	act() {
-		this.actFunction();
+		return this.actFunction();
 	}
 }

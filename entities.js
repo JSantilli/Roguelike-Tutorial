@@ -11,10 +11,19 @@ export function defineEntities(factory) {
 			foreground: new Color(255, 255, 255),
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
-			game: factory.game,
+			map: factory.map,
 			actFunction: () => { // TODO: this should be some kind of mixin
-				factory.game.refresh();
-				factory.game.engine.lock();
+				factory.map.game.refresh();
+				factory.map.game.engine.lock();
+				// let actPromise = new Promise(
+				// 	(resolve, reject) => {
+				// 		setTimeout(() => {
+				// 			resolve('ok');
+				// 		}, 2000);
+				// 	}
+				// );
+
+				// return actPromise;
 			}
 		}
 	);
@@ -26,7 +35,7 @@ export function defineEntities(factory) {
 			foreground: new Color(63, 127, 63),
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
-			game: factory.game,
+			map: factory.map,
 			actFunction: function() {
 				console.log("The " + this.name + " wonders when it will get to take a real turn.");
 			}
@@ -40,7 +49,7 @@ export function defineEntities(factory) {
 			foreground: new Color(0, 127, 0),
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
-			game: factory.game,
+			map: factory.map,
 			actFunction: function() {
 				console.log("The " + this.name + " wonders when it will get to take a real turn.");
 			}

@@ -47,7 +47,7 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 				do {
 					x = getRandomInt(room.getLeft() + 1, room.getRight() - 1);
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
-				} while (!map.isEmptyFloor(x, y));
+				} while (!map.isEmptyTile(x, y));
 
 				const monsterString = ROT.RNG.getWeightedValue(monsters);
 				let monster = entityFactory.create(monsterString, x, y);

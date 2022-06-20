@@ -52,10 +52,11 @@ export class Game {
 
 		this.eventHandler = new EventHandler(this);
 
-		this.entityFactory = new Factory(Entity, this);
-		defineEntities(this.entityFactory);
-		
 		this.map = generateDungeon(this.map_width, this.map_height);
+		this.map.setGame(this);
+
+		this.entityFactory = new Factory(Entity, this.map);
+		defineEntities(this.entityFactory);
 
 		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
 
