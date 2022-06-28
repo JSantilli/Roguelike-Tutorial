@@ -1,6 +1,5 @@
 'use strict';
 
-import { Color } from "./color.js";
 import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
 import { EventHandler } from "./eventHandler.js";
