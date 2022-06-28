@@ -31,7 +31,7 @@ export class Map {
 
 		this.fov = new ROT.FOV.PreciseShadowcasting(function(x, y) {
 			return this.getTile(x, y).transparent;
-		}.bind(this));
+		}.bind(this), {topology: 8});
 	}
 
 	setGame(game) {

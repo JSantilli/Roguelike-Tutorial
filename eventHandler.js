@@ -1,6 +1,8 @@
+
+
 'use strict';
 
-import { BumpAction, MoveAction } from "./action.js";
+import { BumpAction } from "./action.js";
 
 export class EventHandler {
 
