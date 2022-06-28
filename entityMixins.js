@@ -27,3 +27,25 @@ EntityMixins.MonsterActor = {
 		console.log("MIXIN: The " + this.name + " wonders when it will get to take a real turn.");
 	}
 };
+
+EntityMixins.Destructible = {
+	name: "Destructible",
+	init: function({
+		maxHitPoints = 10,
+		hitPoints,
+		defense
+	} = {}) {
+		this.maxHitPoints = maxHitPoints;
+		this.hitPoints = hitPoints || maxHitPoints;
+		this.defense = defense;
+	}
+}
+
+EntityMixins.Attacker = {
+	name: "Attacker",
+	init: function({
+		power
+	} = {}) {
+		this.power = power;
+	}
+}

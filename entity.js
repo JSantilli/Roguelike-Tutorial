@@ -42,11 +42,15 @@ export class Entity {
 
 		this.map = map;
 
-		mixins.forEach(mixin => {
+		mixins.forEach(mixinDeclaration => {
+			let [mixin, parameters] = mixinDeclaration;
 			for (const key in mixin) {
-				if (key !== 'name') {
+				if (key !== 'name' && key !== 'init') {
 					this[key] = mixin[key];
 				}
+			}
+			if (mixin.init) {
+				mixin.init.call(this, parameters);
 			}
 		});
 	}

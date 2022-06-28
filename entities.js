@@ -4,7 +4,7 @@ import { Color } from "./color.js";
 import { EntityMixins } from "./entityMixins.js";
 
 export function defineEntities(factory) {
-	
+
 	factory.define('player',
 		{
 			name: "player",
@@ -14,7 +14,11 @@ export function defineEntities(factory) {
 			blocksMovement: true,
 			map: factory.map,
 			mixins: [
-				EntityMixins.PlayerActor
+				[EntityMixins.PlayerActor],
+				[EntityMixins.Destructible,
+					{ maxHitPoints: 30, defense: 2 }],
+				[EntityMixins.Attacker,
+					{ power: 5 }],
 			]
 		}
 	);
@@ -28,7 +32,11 @@ export function defineEntities(factory) {
 			blocksMovement: true,
 			map: factory.map,
 			mixins: [
-				EntityMixins.MonsterActor
+				[EntityMixins.MonsterActor],
+				[EntityMixins.Destructible,
+					{ maxHitPoints: 10, defense: 0 }],
+				[EntityMixins.Attacker,
+					{ power: 3 }],
 			]
 		}
 	);
@@ -42,7 +50,11 @@ export function defineEntities(factory) {
 			blocksMovement: true,
 			map: factory.map,
 			mixins: [
-				EntityMixins.MonsterActor
+				[EntityMixins.MonsterActor],
+				[EntityMixins.Destructible,
+					{ maxHitPoints: 16, defense: 1 }],
+				[EntityMixins.Attacker,
+					{ power: 4 }],
 			]
 		}
 	);
