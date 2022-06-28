@@ -1,6 +1,7 @@
 'use strict';
 
 import { Color } from "./color.js";
+import { EntityMixins } from "./entityMixins.js";
 
 export function defineEntities(factory) {
 	
@@ -12,19 +13,9 @@ export function defineEntities(factory) {
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
 			map: factory.map,
-			actFunction: () => { // TODO: this should be some kind of mixin
-				factory.map.game.refresh();
-				factory.map.game.engine.lock();
-				// let actPromise = new Promise(
-				// 	(resolve, reject) => {
-				// 		setTimeout(() => {
-				// 			resolve('ok');
-				// 		}, 2000);
-				// 	}
-				// );
-
-				// return actPromise;
-			}
+			mixins: [
+				EntityMixins.PlayerActor
+			]
 		}
 	);
 
@@ -36,9 +27,9 @@ export function defineEntities(factory) {
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
 			map: factory.map,
-			actFunction: function() {
-				console.log("The " + this.name + " wonders when it will get to take a real turn.");
-			}
+			mixins: [
+				EntityMixins.MonsterActor
+			]
 		}
 	);
 
@@ -50,9 +41,9 @@ export function defineEntities(factory) {
 			background: new Color(200, 180, 50),
 			blocksMovement: true,
 			map: factory.map,
-			actFunction: function() {
-				console.log("The " + this.name + " wonders when it will get to take a real turn.");
-			}
+			mixins: [
+				EntityMixins.MonsterActor
+			]
 		}
 	);
 }

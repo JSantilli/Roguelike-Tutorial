@@ -15,7 +15,9 @@ export class Entity {
 
 	map;
 
-	actFunction;
+	mixins;
+
+	// actFunction;
 
 	constructor({
 		name = "<Unnamed>",
@@ -24,7 +26,7 @@ export class Entity {
 		background,
 		blocksMovement = false,
 		map,
-		actFunction = () => {return;} // TODO: this needs to be a mixin instead
+		mixins = []
 
 	} = {}) {
 
@@ -40,7 +42,13 @@ export class Entity {
 
 		this.map = map;
 
-		this.actFunction = actFunction;
+		mixins.forEach(mixin => {
+			for (const key in mixin) {
+				if (key !== 'name') {
+					this[key] = mixin[key];
+				}
+			}
+		});
 	}
 
 	setPosition(x, y) {
@@ -53,9 +61,5 @@ export class Entity {
 		if (this.map) {
 			this.map.updateEntityPosition(this, oldX, oldY);
 		}
-	}
-
-	act() {
-		return this.actFunction();
 	}
 }
