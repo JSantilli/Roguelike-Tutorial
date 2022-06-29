@@ -11,7 +11,7 @@ export function generateDungeon(map_width, map_height) {
 
 	const digger = new ROT.Map.Digger(map_width, map_height, diggerOptions);
 
-	let map = new Map(map_width, map_height, digger);
+	const map = new Map(map_width, map_height, digger);
 
 	map.digger.create((x, y, value) => {
 		if (value === 0) {
@@ -35,11 +35,11 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 		if (i === 0) {
 			const [player_x, player_y] = room.getCenter();
 
-			let player = entityFactory.create('player', player_x, player_y);
+			const player = entityFactory.create('player', player_x, player_y);
 			map.setPlayer(player);
 			scheduler.add(player, true);
 		} else {
-			let numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
+			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 
 			for (let j = 0; j < numberOfMonsters; j++) {
 
@@ -50,7 +50,7 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 				} while (!map.isEmptyTile(x, y));
 
 				const monsterString = ROT.RNG.getWeightedValue(monsters);
-				let monster = entityFactory.create(monsterString, x, y);
+				const monster = entityFactory.create(monsterString, x, y);
 				scheduler.add(monster, true); // TODO: should the factory create method do this?
 			}
 		}

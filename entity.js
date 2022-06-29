@@ -57,8 +57,8 @@ export class Entity {
 	}
 
 	setPosition(x, y) {
-		let oldX = this.x;
-		let oldY = this.y;
+		const oldX = this.x;
+		const oldY = this.y;
 
 		this.x = x;
 		this.y = y;

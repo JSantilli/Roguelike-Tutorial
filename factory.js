@@ -19,13 +19,13 @@ export class Factory {
 	}
 
 	create(name, x, y) {
-		let template = this.templates[name];
+		const template = this.templates[name];
 		if (!template) {
 			// A template by this name doesn't exist
 			return;
 		}
-		let thing = new this.type(template); // TODO: thing seems like a terrible name
-		thing.setPosition(x, y);
-		return thing;
+		const instance = new this.type(template);
+		instance.setPosition(x, y);
+		return instance;
 	}
 }

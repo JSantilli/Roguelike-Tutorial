@@ -34,7 +34,7 @@ export class Game {
 
 		this.maxMonstersPerRoom = 2;
 
-		let displayOptions = {
+		const displayOptions = {
 			width: this.screen_width,
 			height: this.screen_height,
 			forceSquareRatio: true

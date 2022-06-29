@@ -3,6 +3,15 @@
 import { Color } from "./color.js";
 import { EntityMixins } from "./entityMixins.js";
 
+/* 
+TODO: rather than this being a function that calls a function a bunch of times individually for each thing I want to define, this should just be:
+
+* just a file of json objects
+* some other function can read in this set of json objects and pass them into the factory define function
+* or better yet, the factory.define() function should just take in a whole bunch of json objects and be done
+* it can take the name property of the json object and use that as the 'key' for the factory
+
+*/
 export function defineEntities(factory) {
 
 	factory.define('player',

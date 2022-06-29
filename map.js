@@ -23,7 +23,8 @@ export class Map {
 		this.width = width;
 		this.height = height;
 
-		[this.tiles, this.explored] = this.generateMap(this.width, this.height);
+		this.tiles = this.generateMap(this.width, this.height);
+		this.explored = {};
 
 		this.digger = digger;
 
@@ -43,10 +44,9 @@ export class Map {
 	}
 
 	generateMap(width, height) {
-		let tiles = this.createFilled2DArray(width, height, Tile.wallTile);
-		let explored = {};
+		const tiles = this.createFilled2DArray(width, height, Tile.wallTile);
 
-		return [tiles, explored];
+		return tiles;
 	}
 
 	getTile(x, y) {
@@ -121,7 +121,7 @@ export class Map {
 
 	render(display) {
 
-		let visibleCells = {};
+		const visibleCells = {};
 
 		// TODO: it would be cool to somehow remove the player reference from this
 		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
@@ -135,7 +135,7 @@ export class Map {
 			const column = this.tiles[x];
 			for (let y = 0; y < column.length; y++) {
 				if (this.isTileExplored(x, y)) {
-					let tile = this.getTile(x, y);
+					const tile = this.getTile(x, y);
 					let glyph = tile.glyph;
 					if (!visibleCells[x + "," + y]) {
 						if (glyph.darkGlyph) {

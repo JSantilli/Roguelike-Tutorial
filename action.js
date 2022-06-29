@@ -70,7 +70,7 @@ export class MoveAction extends ActionWithDirection {
 export class MeleeAction extends ActionWithDirection {
 
 	perform() {
-		let target = this.map.getEntityAt(this.dest_x, this.dest_y);
+		const target = this.map.getEntityAt(this.dest_x, this.dest_y);
 
 		if (!target) {
 			return;
