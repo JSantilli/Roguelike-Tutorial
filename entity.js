@@ -17,8 +17,6 @@ export class Entity {
 
 	mixins;
 
-	// actFunction;
-
 	constructor({
 		name = "<Unnamed>",
 		character = "?",
@@ -42,8 +40,11 @@ export class Entity {
 
 		this.map = map;
 
+		this.mixins = [];
+
 		mixins.forEach(mixinDeclaration => {
-			let [mixin, parameters] = mixinDeclaration;
+			const [mixin, parameters] = mixinDeclaration;
+			this.mixins.push(mixin.name);
 			for (const key in mixin) {
 				if (key !== 'name' && key !== 'init') {
 					this[key] = mixin[key];
