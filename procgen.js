@@ -2,6 +2,12 @@
 import { Map } from "./map.js";
 import { Tile } from "./tile.js";
 
+// TODO: This shouldn't just export functions like this
+// Instead, export a static style class maybe?
+// Right now you just have some random call to a function called generateDungeon and placeEntities
+// and you have to go to the import statement to understand where those functions are defined
+// bad namespacing, bad for understanding why you would use that function
+
 export function generateDungeon(map_width, map_height) {
 	
 	const diggerOptions = {

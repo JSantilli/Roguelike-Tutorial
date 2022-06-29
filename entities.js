@@ -12,6 +12,34 @@ TODO: rather than this being a function that calls a function a bunch of times i
 * it can take the name property of the json object and use that as the 'key' for the factory
 
 */
+
+
+
+/*
+
+export const EntityDefinitions = {};
+
+EntityDefinitions.Player = {
+	name: 'player',
+	etc: 'etc'
+};
+
+factory.importDefinitions(EntityDefinitions);
+
+factory.create(EntityDefinitions.Player);
+// ^ This seems a bit wordy to me, and now you need to import the entire list of definitions into the place where you create an entity
+// Maybe some kind of enum instead?
+
+*/
+
+/* 
+Unrelated idea, what if instead of these static definitions of creatures or monsters
+every enemy was totally randomly generated from a set of mixins
+
+Have a large set of behaviors that can be 'randomly' pulled in to create a new monster that no one has ever seen before
+*/
+
+
 export function defineEntities(factory) {
 
 	factory.define('player',
