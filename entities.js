@@ -29,7 +29,7 @@ const entityTemplates = [
 	background: new Color(200, 180, 50),
 	blocksMovement: true,
 	mixins: [
-		[EntityMixins.MonsterActor],
+		[EntityMixins.HostileEnemy],
 		[EntityMixins.Destructible,
 		{ maxHitPoints: 10, defense: 0 }],
 		[EntityMixins.Attacker,
@@ -44,7 +44,7 @@ const entityTemplates = [
 	background: new Color(200, 180, 50),
 	blocksMovement: true,
 	mixins: [
-		[EntityMixins.MonsterActor],
+		[EntityMixins.HostileEnemy],
 		[EntityMixins.Destructible,
 		{ maxHitPoints: 16, defense: 1 }],
 		[EntityMixins.Attacker,

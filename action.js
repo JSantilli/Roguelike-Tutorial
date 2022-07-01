@@ -13,6 +13,14 @@ export class Action {
 	perform() {}
 }
 
+export class WaitAction extends Action {
+
+	perform() {
+		console.log("The " + this.entity.name + " waits.");
+		return;
+	}
+}
+
 export class ActionWithDirection extends Action {
 	
 	dx;

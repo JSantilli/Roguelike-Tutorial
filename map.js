@@ -37,6 +37,7 @@ export class Map {
 
 		this.tiles = this.generateMap(this.width, this.height);
 		this.explored = {};
+		this.visible = {};
 
 		this.digger = digger;
 
@@ -82,6 +83,14 @@ export class Map {
 		if (this.getTile(x, y) !== Tile.nullTile) {
 			this.explored[x + "," + y] = explored;
 		}
+	}
+
+	isTileVisible(x, y) {
+		return this.visible[x + "," + y];
+	}
+
+	setTileVisible(x, y, visible) {
+		this.visible[x + "," + y] = visible;
 	}
 
 	isTileWalkable(x, y) {
@@ -133,13 +142,14 @@ export class Map {
 
 	render(display) {
 
-		const visibleCells = {};
-
 		// TODO: it would be cool to somehow remove the player reference from this
 		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
 		//	Could be interesting for having an fov of a security camera or something like it
+
+		this.visible = {};
+
 		this.fov.compute(this.player.x, this.player.y, 8, function(x, y, r, visibility) {
-			visibleCells[x + "," + y] = true;
+			this.setTileVisible(x, y, true);
 			this.setTileExplored(x, y, true);
 		}.bind(this));
 
@@ -149,7 +159,7 @@ export class Map {
 				if (this.isTileExplored(x, y)) {
 					const tile = this.getTile(x, y);
 					let glyph = tile.glyph;
-					if (!visibleCells[x + "," + y]) {
+					if (!this.isTileVisible(x, y)) {
 						if (glyph.darkGlyph) {
 							glyph = glyph.darkGlyph;
 						}

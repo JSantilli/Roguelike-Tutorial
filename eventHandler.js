@@ -44,8 +44,7 @@ export class EventHandler {
 
 		const [dx, dy] = ROT.DIRS[8][this.keyMap[keyCode]];
 
-		const action = new BumpAction(this.game.map.player, dx, dy);
-		action.perform();
+		new BumpAction(this.game.map.player, dx, dy).perform();
 		
 		this.game.engine.unlock();
 	}
