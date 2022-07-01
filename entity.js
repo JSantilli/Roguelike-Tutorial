@@ -23,7 +23,6 @@ export class Entity {
 		foreground,
 		background,
 		blocksMovement = false,
-		map,
 		mixins = []
 
 	} = {}) {
@@ -37,8 +36,6 @@ export class Entity {
 			foreground: foreground,
 			background: background
 		});
-
-		this.map = map;
 
 		this.mixins = [];
 
@@ -54,6 +51,10 @@ export class Entity {
 				mixin.init.call(this, parameters);
 			}
 		});
+	}
+
+	setMap(map) {
+		this.map = map;
 	}
 
 	setPosition(x, y) {

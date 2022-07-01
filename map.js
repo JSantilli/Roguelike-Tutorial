@@ -2,6 +2,18 @@
 
 import { Tile } from "./tile.js";
 
+/* 
+
+TODO:
+Maybe Map should also be in charge of entity creation.
+
+Rather than the game calling into procgen, map does.
+Map generates the dungeons (or loads one in, or whatever)
+Map defines what entities are relevant for the map and therefore owns the factory
+Map creates those entities and places them (in the map)
+
+*/
+
 export class Map {
 
 	width;

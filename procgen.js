@@ -41,7 +41,7 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 		if (i === 0) {
 			const [player_x, player_y] = room.getCenter();
 
-			const player = entityFactory.create('player', player_x, player_y);
+			const player = entityFactory.create('player', map, player_x, player_y);
 			map.setPlayer(player);
 			scheduler.add(player, true);
 		} else {
@@ -56,7 +56,7 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 				} while (!map.isEmptyTile(x, y));
 
 				const monsterString = ROT.RNG.getWeightedValue(monsters);
-				const monster = entityFactory.create(monsterString, x, y);
+				const monster = entityFactory.create(monsterString, map, x, y);
 				scheduler.add(monster, true); // TODO: should the factory create method do this?
 			}
 		}
