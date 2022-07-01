@@ -68,3 +68,11 @@ export class Entity {
 		}
 	}
 }
+
+// TODO:
+// Actors, items, other stuff is all an Entity
+	// An entity is an actor or item etc for the purpose of driving game behavior
+		// if it has an Actor, Item, etc mixin
+		// All behavior is defined as some kind of mixin
+		// Blocks movement? mixin
+		// etc
