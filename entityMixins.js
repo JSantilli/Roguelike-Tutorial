@@ -1,6 +1,6 @@
 'use strict';
 
-export let EntityMixins = {};
+export const EntityMixins = {};
 
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
@@ -9,7 +9,7 @@ EntityMixins.PlayerActor = {
 		this.map.game.engine.lock();
 
 		// This code is left here in case I need to refactor the player actor act function
-		// let actPromise = new Promise(
+		// const actPromise = new Promise(
 		// 	(resolve, reject) => {
 		// 		setTimeout(() => {
 		// 			resolve('ok');
