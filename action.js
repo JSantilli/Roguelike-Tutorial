@@ -1,20 +1,41 @@
 'use strict';
 
 export class Action {
+
+	entity;
+	map;
+
+	constructor(entity) {
+		this.entity = entity;
+		this.map = this.entity.map;
+	}
 	
 	perform() {}
+}
+
+export class WaitAction extends Action {
+
+	perform() {
+		console.log("The " + this.entity.name + " waits.");
+		return;
+	}
 }
 
 export class ActionWithDirection extends Action {
 	
 	dx;
 	dy;
+	destinationX;
+	destinationY;
 	
-	constructor(dx, dy) {
-		super();
+	constructor(entity, dx, dy) {
+		super(entity);
 		
 		this.dx = dx;
 		this.dy = dy;
+
+		this.destinationX = this.entity.x + this.dx;
+		this.destinationY = this.entity.y + this.dy;
 	}
 
 	perform() {}
@@ -22,56 +43,56 @@ export class ActionWithDirection extends Action {
 
 export class BumpAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
-
-		if (map.getEntityAt(dest_x, dest_y) && map.getEntityAt(dest_x, dest_y).blocksMovement) {
-			// Melee attack against target
-			return new MeleeAction(this.dx, this.dy).perform(map, entity);
+	perform() {
+		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
+			return new MeleeAction(this.entity, this.dx, this.dy).perform();
 		} else {
-			return new MoveAction(this.dx, this.dy).perform(map, entity);
+			return new MoveAction(this.entity, this.dx, this.dy).perform();
 		}
 	}
 }
 
 export class MoveAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
-
-		if (!map.isInBounds(dest_x, dest_y)) {
+	perform() {
+		if (!this.map.isTileInBounds(this.destinationX, this.destinationY)) {
 			// Destination out of bounds
 			return;
 		}
 
-		if (!map.getTile(dest_x, dest_y).walkable) {
+		if (!this.map.isTileWalkable(this.destinationX, this.destinationY)) {
 			// Destination is not walkble
 			return;
 		}
 
-		if (map.getEntityAt(dest_x, dest_y) && map.getEntityAt(dest_x, dest_y).blocksMovement) {
+		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
 			// Destination contains an entity that blocks movement
 			return;
 		}
 
-		entity.setPosition(dest_x, dest_y);
+		this.entity.setPosition(this.destinationX, this.destinationY);
 	}
 }
 
 export class MeleeAction extends ActionWithDirection {
 
-	perform(map, entity) {
-		const dest_x = entity.x + this.dx;
-		const dest_y = entity.y + this.dy;
+	perform() {
+		const targets = this.map.getBlockingEntities(this.destinationX, this.destinationY);
 
-		let target = map.getEntityAt(dest_x, dest_y);
-
-		if (!target) {
+		if (targets.length === 0) {
 			return;
 		}
 
-		console.log("You kick the " + target.name + ", much to its annoyance!");
+		targets.forEach(target => {
+			const attackDescription = this.entity.name + " attacks " + target.name;
+
+			const damage = this.entity.power - target.defense;
+			if (damage > 0) {
+				console.log(attackDescription + " for " + damage + " hit points.");
+				target.setHitPoints(target.hitPoints - damage);
+			} else {
+				console.log(attackDescription + " but does no damage.");
+			}
+		});
 	}
 }

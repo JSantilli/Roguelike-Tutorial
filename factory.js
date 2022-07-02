@@ -5,27 +5,34 @@ export class Factory {
 	type;
 	templates;
 
-	game;
-
-	constructor(type, game) {
+	constructor(type) {
 		this.type = type;
 		this.templates = {};
-		
-		this.game = game;
 	}
 
-	define(name, template) {
-		this.templates[name] = template;
+	importDefinitions(templates) {
+		templates.forEach(template => {
+			this.define(template);
+		});
 	}
 
-	create(name, x, y) {
-		let template = this.templates[name];
+	define(template) {
+		this.templates[template.name] = template;
+	}
+
+	create(name, map, x, y) {
+		const template = this.templates[name];
 		if (!template) {
 			// A template by this name doesn't exist
 			return;
 		}
-		let thing = new this.type(template); // TODO: thing seems like a terrible name
-		thing.setPosition(x, y);
-		return thing;
+		const instance = new this.type(template);
+
+		// TODO: These seem a little out of place here. Should the factory be the one that sets the map and the position of an 'instance'?
+		// These are concepts that instead belong to an Entity specifically. What if other 'things' are created by a factory
+		// and don't require a map or position?
+		instance.setMap(map);
+		instance.setPosition(x, y);
+		return instance;
 	}
 }

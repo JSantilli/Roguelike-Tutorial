@@ -13,24 +13,23 @@ export class Entity {
 	
 	glyph;
 
-	game;
+	renderOrder;
 
-	actFunction;
+	map;
+
+	mixins;
 
 	constructor({
 		name = "<Unnamed>",
 		character = "?",
 		foreground,
 		background,
+		renderOrder,
 		blocksMovement = false,
-		game,
-		actFunction = () => {return;} // TODO: this needs to be a mixin instead
-
+		mixins = {}
 	} = {}) {
 
 		this.name = name;
-
-		this.blocksMovement = blocksMovement;
 
 		this.glyph = new Glyph({
 			character: character,
@@ -38,24 +37,51 @@ export class Entity {
 			background: background
 		});
 
-		this.game = game;
+		this.renderOrder = renderOrder;
 
-		this.actFunction = actFunction;
+		this.blocksMovement = blocksMovement;
+
+		this.mixins = {};
+
+		mixins.forEach(mixinDeclaration => {
+			const [mixin, parameters] = mixinDeclaration;
+			this.mixins[mixin.name] = true;
+			for (const key in mixin) {
+				if (key !== 'name' && key !== 'init') {
+					this[key] = mixin[key];
+				}
+			}
+			if (mixin.init) {
+				mixin.init.call(this, parameters);
+			}
+		});
+	}
+
+	setMap(map) {
+		this.map = map;
 	}
 
 	setPosition(x, y) {
-		let oldX = this.x;
-		let oldY = this.y;
+		const oldX = this.x;
+		const oldY = this.y;
 
 		this.x = x;
 		this.y = y;
 
-		if (this.game.map) {
-			this.game.map.updateEntityPosition(this, oldX, oldY);
+		if (this.map) {
+			this.map.updateEntityPosition(this, oldX, oldY);
 		}
 	}
 
-	act() {
-		this.actFunction();
+	hasMixin(name) {
+		return this.mixins[name];
 	}
 }
+
+// TODO:
+// Actors, items, other stuff is all an Entity
+	// An entity is an actor or item etc for the purpose of driving game behavior
+		// if it has an Actor, Item, etc mixin
+		// All behavior is defined as some kind of mixin
+		// Blocks movement? mixin
+		// etc
