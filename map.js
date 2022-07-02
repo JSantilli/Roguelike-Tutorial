@@ -38,6 +38,9 @@ export class Map {
 		this.tiles = this.generateMap(this.width, this.height);
 		this.explored = {};
 		this.visible = {};
+		// TODO: ^ this.visible only needs to be an instance variable on map because we use the player's vision as the monsters' vision when pathfinding.
+		// Shouldn't need this to exist except in the render method once monster fov is implemented separately.
+		// this.fov already exists, so we should be able to compute the moster fov in the proper mixin, perhaps with some new helper functions here.
 
 		this.digger = digger;
 
@@ -57,21 +60,21 @@ export class Map {
 	}
 
 	generateMap(width, height) {
-		const tiles = this.createFilled2DArray(width, height, Tile.wallTile);
+		const tiles = this.createFilled2DArray(width, height, Tile.WallTile);
 
 		return tiles;
 	}
 
 	getTile(x, y) {
 		if (!this.isTileInBounds(x, y)) {
-			return Tile.nullTile;
+			return Tile.NullTile;
 		} else {
-			return this.tiles[x][y] || Tile.nullTile;
+			return this.tiles[x][y] || Tile.NullTile;
 		}
 	}
 
 	isTileExplored(x, y) {
-		if (this.getTile(x, y) !== Tile.nullTile) {
+		if (this.getTile(x, y) !== Tile.NullTile) {
 			return this.explored[x + "," + y];
 		} else {
 			return false;
@@ -80,7 +83,7 @@ export class Map {
 	}
 
 	setTileExplored(x, y, explored) {
-		if (this.getTile(x, y) !== Tile.nullTile) {
+		if (this.getTile(x, y) !== Tile.NullTile) {
 			this.explored[x + "," + y] = explored;
 		}
 	}
@@ -101,43 +104,46 @@ export class Map {
 		return (x >= 0 && x < this.width && y >= 0 && y < this.height);
 	}
 
-	getEntityAt(x, y) {
+	getEntitiesAt(x, y) {
 		return this.entities[x + "," + y];
 	}
 
-	addEntity(entity) {
-		this.addEntityAt(entity, entity.x, entity.y);
-	}
-
 	addEntityAt(entity, x, y) {
-		entity.x = x;
-		entity.y = y;
 		const key = entity.x + "," + entity.y;
-		this.entities[key] = entity;
+
+		if (this.entities[key]) {
+			this.entities[key].add(entity);
+		} else {
+			this.entities[key] = new Set([entity]);
+		}
 	}
 
-	// BUG: Currently only one entity can exist in a tile at a time
-	updateEntityPosition(entity, oldX, oldY) {
-		delete this.entities[oldX + "," + oldY];
+	updateEntityPosition(entity, previousX, previousY) {
+		const previousPositionEntities = this.entities[previousX + "," + previousY];
+		if (previousPositionEntities) {
+			previousPositionEntities.delete(entity);
+		}
 
 		if (this.isTileInBounds(entity.x, entity.y)) {
-			if (this.isEmptyTile(entity.x, entity.y)) {
-				this.addEntity(entity);
-			}
+			this.addEntityAt(entity, entity.x, entity.y);
 		}
 	}
 
 	isEmptyTile(x, y) {
-		return !this.getEntityAt(x, y);
+		return !this.getEntitiesAt(x, y);
 	}
 
-	getBlockingEntity(x, y) {
-		const entity = this.getEntityAt(x, y);
-		if (entity && entity.blocksMovement) {
-			return entity;
-		} else {
-			return null;
+	getBlockingEntities(x, y) {
+		const entities = this.getEntitiesAt(x, y);
+		const blockers = [];
+		if (entities) {
+			entities.forEach(entity => {
+				if (entity.blocksMovement) {
+					blockers.push(entity);
+				}
+			});
 		}
+		return blockers;
 	}
 
 	render(display) {
@@ -145,6 +151,8 @@ export class Map {
 		// TODO: it would be cool to somehow remove the player reference from this
 		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
 		//	Could be interesting for having an fov of a security camera or something like it
+
+		console.log("HP: " + this.player.hitPoints + "/" + this.player.maxHitPoints);
 
 		this.visible = {};
 
@@ -164,8 +172,12 @@ export class Map {
 							glyph = glyph.darkGlyph;
 						}
 					} else {
-						if (this.getEntityAt(x, y)) {
-							glyph = this.getEntityAt(x, y).glyph;
+						if (this.getEntitiesAt(x, y) && this.getEntitiesAt(x, y).size !== 0) {
+							const entities = Array.from(this.getEntitiesAt(x, y));
+							entities.sort(function(a, b) {
+								return b.renderOrder - a.renderOrder;
+							});
+							glyph = entities[0].glyph;
 						}
 					}
 					display.draw(x, y, glyph.character, glyph.foreground.colorStr, glyph.background.colorStr);

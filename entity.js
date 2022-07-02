@@ -13,6 +13,8 @@ export class Entity {
 	
 	glyph;
 
+	renderOrder;
+
 	map;
 
 	mixins;
@@ -22,14 +24,12 @@ export class Entity {
 		character = "?",
 		foreground,
 		background,
+		renderOrder,
 		blocksMovement = false,
-		mixins = []
-
+		mixins = {}
 	} = {}) {
 
 		this.name = name;
-
-		this.blocksMovement = blocksMovement;
 
 		this.glyph = new Glyph({
 			character: character,
@@ -37,11 +37,15 @@ export class Entity {
 			background: background
 		});
 
-		this.mixins = [];
+		this.renderOrder = renderOrder;
+
+		this.blocksMovement = blocksMovement;
+
+		this.mixins = {};
 
 		mixins.forEach(mixinDeclaration => {
 			const [mixin, parameters] = mixinDeclaration;
-			this.mixins.push(mixin.name);
+			this.mixins[mixin.name] = true;
 			for (const key in mixin) {
 				if (key !== 'name' && key !== 'init') {
 					this[key] = mixin[key];
@@ -67,6 +71,10 @@ export class Entity {
 		if (this.map) {
 			this.map.updateEntityPosition(this, oldX, oldY);
 		}
+	}
+
+	hasMixin(name) {
+		return this.mixins[name];
 	}
 }
 

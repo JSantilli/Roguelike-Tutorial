@@ -2,6 +2,7 @@
 
 import { Color } from "./color.js";
 import { EntityMixins } from "./entityMixins.js";
+import { RenderOrder } from "./renderOrder.js";
 
 // TODO: maybe this ends up being a raw json file instead of json being defined in a list?
 
@@ -12,6 +13,7 @@ const entityTemplates = [
 	character: "@",
 	foreground: new Color(255, 255, 255),
 	background: new Color(200, 180, 50),
+	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [
 		[EntityMixins.PlayerActor],
@@ -27,6 +29,7 @@ const entityTemplates = [
 	character: "o",
 	foreground: new Color(63, 127, 63),
 	background: new Color(200, 180, 50),
+	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [
 		[EntityMixins.HostileEnemy],
@@ -42,6 +45,7 @@ const entityTemplates = [
 	character: "T",
 	foreground: new Color(0, 127, 0),
 	background: new Color(200, 180, 50),
+	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [
 		[EntityMixins.HostileEnemy],

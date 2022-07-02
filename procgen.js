@@ -21,7 +21,7 @@ export function generateDungeon(map_width, map_height) {
 
 	map.digger.create((x, y, value) => {
 		if (value === 0) {
-			map.tiles[x][y] = Tile.floorTile;
+			map.tiles[x][y] = Tile.FloorTile;
 		}
 	});
 

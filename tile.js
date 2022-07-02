@@ -23,9 +23,9 @@ export class Tile {
 	}
 }
 
-Tile.nullTile = new Tile();
+Tile.NullTile = new Tile();
 
-Tile.floorTile = new Tile({
+Tile.FloorTile = new Tile({
 	glyphProperties: {
 		character: ' ',
 		foreground: new Color(255, 255, 255),
@@ -40,7 +40,7 @@ Tile.floorTile = new Tile({
 	transparent: true
 });
 
-Tile.wallTile = new Tile({
+Tile.WallTile = new Tile({
 	glyphProperties: {
 		character: ' ',
 		foreground: new Color(255, 255, 255),

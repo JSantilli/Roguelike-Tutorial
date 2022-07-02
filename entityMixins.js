@@ -1,6 +1,8 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { Glyph } from "./glyph.js";
+import { RenderOrder } from "./renderOrder.js";
 
 export const EntityMixins = {};
 
@@ -26,35 +28,41 @@ EntityMixins.PlayerActor = {
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	act: function() {
-		const target = this.map.player;
-		const dx = target.x - this.x;
-		const dy = target.y - this.y;
-		const distance = Math.max(Math.abs(dx), Math.abs(dy));
+		if (!this.hasMixin("Destructible") || this.isAlive) {
+			const target = this.map.player;
+			const dx = target.x - this.x;
+			const dy = target.y - this.y;
+			const distance = Math.max(Math.abs(dx), Math.abs(dy));
 
-		if (this.map.isTileVisible(this.x, this.y)) {
-			if (distance <= 1) {
-				new MeleeAction(this, dx, dy).perform();
-				return;
-			} else {
-				this.path = this.getPathTo(this, target);
+			if (this.map.isTileVisible(this.x, this.y)) {
+				if (distance <= 1) {
+					new MeleeAction(this, dx, dy).perform();
+					return;
+				} else {
+					this.path = this.getPathTo(this, target);
+				}
 			}
-		}
 
-		if (this.path && this.path.length > 0) {
-			const [dest_x, dest_y] = this.path.shift();
-			new MoveAction(this, dest_x - this.x, dest_y - this.y).perform();
+			if (this.path && this.path.length > 0) {
+				const [destinationX, destinationY] = this.path.shift();
+				new MoveAction(this, destinationX - this.x, destinationY - this.y).perform();
+				return;
+			}
+
+			new WaitAction(this).perform();
 			return;
 		}
-
-		new WaitAction(this).perform();
-		return;
 	},
 
 	getPathTo: function(source, target) {
 		const pathfinder = new ROT.Path.AStar(target.x, target.y, function(x, y) {
-			const entity = source.map.getBlockingEntity(x, y);
-			if (entity && entity !== source && entity !== target) {
-				return false;
+			const blockingEntities = source.map.getBlockingEntities(x, y);
+			if (blockingEntities.length !== 0) {
+				blockingEntities.forEach(entity => {
+					if (entity !== source && entity !== target) {
+						return false;
+					}
+				});
 			}
 			return source.map.isTileInBounds(x, y) && source.map.isTileWalkable(x, y);
 		}, {topology: 8});
@@ -73,11 +81,41 @@ EntityMixins.Destructible = {
 	init: function({
 		maxHitPoints = 10,
 		hitPoints,
-		defense
+		defense,
+		isAlive = true
 	} = {}) {
 		this.maxHitPoints = maxHitPoints;
-		this.hitPoints = hitPoints || maxHitPoints;
+		this.hitPoints = Math.min(hitPoints || maxHitPoints, maxHitPoints);
 		this.defense = defense;
+		this.isAlive = isAlive
+	},
+
+	setHitPoints(value) {
+		this.hitPoints = Math.max(0, Math.min(value, this.maxHitPoints));
+		if (this.hitPoints === 0) {
+			this.die();
+		}
+	},
+
+	die() {
+
+		// TODO: I should probably remove the entity from the scheduler when they die.
+
+		let deathMessage = "";
+
+		if (this === this.map.player) {
+			deathMessage = "You died!";
+		} else {
+			deathMessage = this.name + " is dead!";
+		}
+		
+		console.log(deathMessage);
+
+		this.isAlive = false;
+		this.blocksMovement = false;
+		this.name = "remains of " + this.name;
+		this.glyph = Glyph.corpseGlyph;
+		this.renderOrder = RenderOrder.Corpse;
 	}
 }
 
