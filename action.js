@@ -88,8 +88,8 @@ export class MeleeAction extends ActionWithDirection {
 
 			const damage = this.entity.power - target.defense;
 			if (damage > 0) {
-				target.setHitPoints(target.hitPoints - damage);
 				console.log(attackDescription + " for " + damage + " hit points.");
+				target.setHitPoints(target.hitPoints - damage);
 			} else {
 				console.log(attackDescription + " but does no damage.");
 			}

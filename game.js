@@ -2,8 +2,9 @@
 
 import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
-import { EventHandler } from "./eventHandler.js";
+import { MainGameEventHandler } from "./eventHandlers.js";
 import { Factory } from "./factory.js";
+import { InputHandler } from "./inputHandler.js";
 import { generateDungeon, placeEntities } from "./procgen.js";
 
 export class Game {
@@ -18,7 +19,8 @@ export class Game {
 	scheduler;
 	engine;
 	
-	eventHandler;
+	inputHandler;
+	currentEventHandler;
 	
 	map;
 	maxMonstersPerRoom; // TODO: does this really need to be defined on the Game?
@@ -49,7 +51,8 @@ export class Game {
 
 	start() {
 
-		this.eventHandler = new EventHandler(this);
+		this.inputHandler = new InputHandler();
+		this.setCurrentEventHandler(MainGameEventHandler)
 
 		this.map = generateDungeon(this.map_width, this.map_height);
 		this.map.setGame(this);
@@ -60,11 +63,15 @@ export class Game {
 		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
 
 		this.engine.start();
-		this.refresh();
 	}
 
 	refresh() {
 		this.display.clear();
 		this.map.render(this.display);
+	}
+
+	setCurrentEventHandler(eventHandler) {
+		this.currentEventHandler = new eventHandler(this);
+		this.inputHandler.setCurrentEventHandler(this.currentEventHandler);
 	}
 }

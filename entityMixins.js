@@ -1,6 +1,7 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { GameOverEventHandler } from "./eventHandlers.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
 
@@ -105,6 +106,7 @@ EntityMixins.Destructible = {
 
 		if (this === this.map.player) {
 			deathMessage = "You died!";
+			this.map.game.setCurrentEventHandler(GameOverEventHandler);
 		} else {
 			deathMessage = this.name + " is dead!";
 		}
