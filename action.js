@@ -16,7 +16,6 @@ export class Action {
 export class WaitAction extends Action {
 
 	perform() {
-		console.log("The " + this.entity.name + " waits.");
 		return;
 	}
 }
@@ -84,7 +83,7 @@ export class MeleeAction extends ActionWithDirection {
 		}
 
 		targets.forEach(target => {
-			const attackDescription = this.entity.name + " attacks " + target.name;
+			const attackDescription = ROT.Util.capitalize(this.entity.name) + " attacks " + target.name;
 
 			const damage = this.entity.power - target.defense;
 			if (damage > 0) {

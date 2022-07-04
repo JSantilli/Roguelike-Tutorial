@@ -6,6 +6,7 @@ import { MainGameEventHandler } from "./eventHandlers.js";
 import { Factory } from "./factory.js";
 import { InputHandler } from "./inputHandler.js";
 import { generateDungeon, placeEntities } from "./procgen.js";
+import { renderHealthBar } from "./renderFunctions.js";
 
 export class Game {
 
@@ -68,6 +69,7 @@ export class Game {
 	refresh() {
 		this.display.clear();
 		this.map.render(this.display);
+		renderHealthBar(this.display, this.map.player.hitPoints, this.map.player.maxHitPoints, 20);
 	}
 
 	setCurrentEventHandler(eventHandler) {

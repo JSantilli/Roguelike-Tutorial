@@ -152,8 +152,6 @@ export class Map {
 		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
 		//	Could be interesting for having an fov of a security camera or something like it
 
-		console.log("HP: " + this.player.hitPoints + "/" + this.player.maxHitPoints);
-
 		this.visible = {};
 
 		this.fov.compute(this.player.x, this.player.y, 8, function(x, y, r, visibility) {
