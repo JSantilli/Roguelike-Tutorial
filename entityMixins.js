@@ -1,6 +1,7 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { Color } from "./color.js";
 import { GameOverEventHandler } from "./eventHandlers.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
@@ -103,15 +104,18 @@ EntityMixins.Destructible = {
 		// TODO: I should probably remove the entity from the scheduler when they die.
 
 		let deathMessage = "";
+		let deathMessageColor;
 
 		if (this === this.map.player) {
 			deathMessage = "You died!";
+			deathMessageColor = Color.PlayerDie;
 			this.map.game.setCurrentEventHandler(GameOverEventHandler);
 		} else {
 			deathMessage = this.name + " is dead!";
+			deathMessageColor = Color.EnemyDie;
 		}
 		
-		console.log(deathMessage);
+		this.map.game.messageLog.addMessage(deathMessage, deathMessageColor);
 
 		this.isAlive = false;
 		this.blocksMovement = false;

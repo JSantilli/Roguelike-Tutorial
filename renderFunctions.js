@@ -12,9 +12,10 @@ export function renderHealthBar(display, currentValue, maximumValue, totalWidth)
 	}
 
 	const barText = "HP: " + currentValue + "/" + maximumValue;
-	[...barText].forEach((character, index) => {
-		display.drawOver(index + 1, 45, character, Color.BarText.colorStr);
-	});
+	for (let i = 0; i < barText.length; i++) {
+		const character = barText[i];
+		display.drawOver(i + 1, 45, character, Color.BarText.colorStr);
+	}
 }
 
 // TODO: I might need to add a way to change the height of the rectangle

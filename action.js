@@ -1,5 +1,7 @@
 'use strict';
 
+import { Color } from "./color.js";
+
 export class Action {
 
 	entity;
@@ -83,15 +85,28 @@ export class MeleeAction extends ActionWithDirection {
 		}
 
 		targets.forEach(target => {
+
+			let attackColor = Color.EnemyAttack;
+			if (this.entity === this.map.player) {
+				attackColor = Color.PlayerAttack;
+			}
+
 			const attackDescription = ROT.Util.capitalize(this.entity.name) + " attacks " + target.name;
+			let attackMessage;
 
 			const damage = this.entity.power - target.defense;
 			if (damage > 0) {
-				console.log(attackDescription + " for " + damage + " hit points.");
-				target.setHitPoints(target.hitPoints - damage);
+				attackMessage = attackDescription + " for " + damage + " hit points.";
 			} else {
-				console.log(attackDescription + " but does no damage.");
+				attackMessage = attackDescription + " but does no damage.";
 			}
+
+			this.map.game.messageLog.addMessage(attackMessage, attackColor);
+
+			if (damage > 0) {
+				target.setHitPoints(target.hitPoints - damage);
+			}
+
 		});
 	}
 }
