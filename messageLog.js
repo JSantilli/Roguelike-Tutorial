@@ -15,6 +15,10 @@ export class MessageLog {
 
 	}
 
+	getLength() {
+		return this.messages.length;
+	}
+
 	addMessage(text, foreground = Color.White, stack = true) {
 
 		// TODO: I hate this long if condition, but I can't come up with a clean way to refactor it yet.
@@ -29,12 +33,14 @@ export class MessageLog {
 		}
 	}
 
-	render(display, x, y, width, height) {
+	render(display, x, y, width, height, messageOffset = 0) {
 
 		let yOffset = height;
 
+		const startingMessageIndex = this.messages.length - messageOffset - 1;
+
 		// Loop over messages in reverse to print the latest message first
-		for (let i = this.messages.length - 1; i >= 0; i--) {
+		for (let i = startingMessageIndex; i >= 0; i--) {
 			const message = this.messages[i];
 
 			const [textToDraw, linesToDraw] = this.getTruncatedMessage(message.getFullText(), yOffset, width);

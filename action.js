@@ -15,11 +15,41 @@ export class Action {
 	perform() {}
 }
 
-export class WaitAction extends Action {
+export class ChangeViewAction extends Action {
+
+	newView;
+
+	constructor(entity, newView) {
+		super(entity);
+
+		this.newView = newView;
+	}
 
 	perform() {
-		return;
+
+		this.map.game.switchScreen(this.newView);
 	}
+}
+
+export class ScrollAction extends Action {
+
+	cursorAdjust;
+
+	constructor(entity, cursorAdjust) {
+		super(entity);
+
+		this.cursorAdjust = cursorAdjust;
+	}
+	
+	perform () {
+
+		this.map.game.screen.scrollList(this.cursorAdjust);
+	}
+}
+
+export class WaitAction extends Action {
+
+	perform() {}
 }
 
 export class ActionWithDirection extends Action {
@@ -45,6 +75,7 @@ export class ActionWithDirection extends Action {
 export class BumpAction extends ActionWithDirection {
 
 	perform() {
+
 		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
 			return new MeleeAction(this.entity, this.dx, this.dy).perform();
 		} else {
@@ -56,6 +87,7 @@ export class BumpAction extends ActionWithDirection {
 export class MoveAction extends ActionWithDirection {
 
 	perform() {
+
 		if (!this.map.isTileInBounds(this.destinationX, this.destinationY)) {
 			// Destination out of bounds
 			return;
@@ -78,6 +110,7 @@ export class MoveAction extends ActionWithDirection {
 export class MeleeAction extends ActionWithDirection {
 
 	perform() {
+
 		const targets = this.map.getBlockingEntities(this.destinationX, this.destinationY);
 
 		if (targets.length === 0) {

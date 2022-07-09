@@ -2,14 +2,14 @@
 
 export class InputHandler {
 
+	game;
 	currentEventHandler;
 
-	constructor() {
-		window.addEventListener("keydown", this);
-	}
+	constructor(game) {
 
-	setCurrentEventHandler(eventHandler) {
-		this.currentEventHandler = eventHandler;
+		this.game = game;
+
+		window.addEventListener("keydown", this);
 	}
 
 	handleEvent(e) {
@@ -20,6 +20,6 @@ export class InputHandler {
 
 	eventKeydown(e) {
 		const keyCode = e.keyCode;
-		this.currentEventHandler.handleKeydown(keyCode);
+		this.game.screen.eventHandler.handleKeydown(keyCode);
 	}
 }

@@ -3,12 +3,13 @@
 import { Color } from "./color.js";
 import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
-import { MainGameEventHandler } from "./eventHandlers.js";
 import { Factory } from "./factory.js";
 import { InputHandler } from "./inputHandler.js";
 import { MessageLog } from "./messageLog.js";
 import { generateDungeon, placeEntities } from "./procgen.js";
 import { renderHealthBar } from "./renderFunctions.js";
+import { Screen } from "./screen.js";
+import { ScreenDefinitions } from "./screens.js";
 
 export class Game {
 
@@ -22,9 +23,9 @@ export class Game {
 	messageLog;
 	scheduler;
 	engine;
-	
-	inputHandler;
-	currentEventHandler;
+	inputHandler
+
+	screen;
 	
 	map;
 	maxMonstersPerRoom; // TODO: does this really need to be defined on the Game?
@@ -47,7 +48,9 @@ export class Game {
 		}
 
 		this.display = new ROT.Display(displayOptions);
-		document.body.appendChild(this.display.getContainer());
+		const displayElement = document.body.appendChild(this.display.getContainer());
+		// TODO: I need to set this in a css file, not in js
+		displayElement.style = "position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; margin:auto;";
 
 		this.messageLog = new MessageLog();
 
@@ -57,8 +60,9 @@ export class Game {
 
 	start() {
 
-		this.inputHandler = new InputHandler();
-		this.setCurrentEventHandler(MainGameEventHandler)
+		this.switchScreen(ScreenDefinitions.MainGame);
+
+		this.inputHandler = new InputHandler(this);
 
 		this.map = generateDungeon(this.map_width, this.map_height);
 		this.map.setGame(this);
@@ -68,11 +72,13 @@ export class Game {
 
 		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
 
-		this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Color.WelcomeText, false);
-		this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Color.WelcomeText, false);
-		this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Color.WelcomeText, false);
-		this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Color.WelcomeText, false);
-		this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Color.WelcomeText, false);
+		for (let i = 0; i < 20; i++) {
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Color.WelcomeText, false);
+		}
 
 		this.engine.start();
 	}
@@ -84,8 +90,12 @@ export class Game {
 		renderHealthBar(this.display, this.map.player.hitPoints, this.map.player.maxHitPoints, 20);
 	}
 
-	setCurrentEventHandler(eventHandler) {
-		this.currentEventHandler = new eventHandler(this);
-		this.inputHandler.setCurrentEventHandler(this.currentEventHandler);
+	switchScreen(screenDefinition) {
+		if (this.screen) {
+			this.screen.exit();
+		}
+		this.screen = new Screen(this, screenDefinition);
+		this.screen.init();
+		this.screen.render();
 	}
 }
