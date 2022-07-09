@@ -13,11 +13,11 @@ import { ScreenDefinitions } from "./screens.js";
 
 export class Game {
 
-	screen_width;
-	screen_height;
+	screenWidth;
+	screenHeight;
 
-	map_width;
-	map_height;
+	mapWidth;
+	mapHeight;
 	
 	display;
 	messageLog;
@@ -33,17 +33,17 @@ export class Game {
 	entityFactory;
 
 	constructor() {
-		this.screen_width = 80;
-		this.screen_height = 50;
+		this.screenWidth = 80;
+		this.screenHeight = 50;
 
-		this.map_width = 80;
-		this.map_height = 43;
+		this.mapWidth = 80;
+		this.mapHeight = 43;
 
 		this.maxMonstersPerRoom = 2;
 
 		const displayOptions = {
-			width: this.screen_width,
-			height: this.screen_height,
+			width: this.screenWidth,
+			height: this.screenHeight,
 			forceSquareRatio: true
 		}
 
@@ -64,7 +64,7 @@ export class Game {
 
 		this.inputHandler = new InputHandler(this);
 
-		this.map = generateDungeon(this.map_width, this.map_height);
+		this.map = generateDungeon(this.mapWidth, this.mapHeight);
 		this.map.setGame(this);
 
 		this.entityFactory = new Factory(Entity);

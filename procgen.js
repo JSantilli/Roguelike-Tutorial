@@ -8,16 +8,16 @@ import { Tile } from "./tile.js";
 // and you have to go to the import statement to understand where those functions are defined
 // bad namespacing, bad for understanding why you would use that function
 
-export function generateDungeon(map_width, map_height) {
+export function generateDungeon(mapWidth, mapHeight) {
 	
 	const diggerOptions = {
 		roomWidth: [6, 10],
 		roomHeight: [6, 10],
 	};
 
-	const digger = new ROT.Map.Digger(map_width, map_height, diggerOptions);
+	const digger = new ROT.Map.Digger(mapWidth, mapHeight, diggerOptions);
 
-	const map = new Map(map_width, map_height, digger);
+	const map = new Map(mapWidth, mapHeight, digger);
 
 	map.digger.create((x, y, value) => {
 		if (value === 0) {

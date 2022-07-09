@@ -24,8 +24,8 @@ ScreenDefinitions.ViewMessages = {
 	eventHandlerClass: ScrollingViewEventHandler,
 	init: function () {
 
-		this.displayWidth = this.game.screen_width - 6;
-		this.displayHeight = this.game.screen_height - 6;
+		this.displayWidth = this.game.screenWidth - 6;
+		this.displayHeight = this.game.screenHeight - 6;
 
 		const displayOptions = {
 			width: this.displayWidth,
