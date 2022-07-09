@@ -2,24 +2,39 @@
 
 export class InputHandler {
 
+	game;
 	currentEventHandler;
 
-	constructor() {
-		window.addEventListener("keydown", this);
-	}
+	constructor(game) {
 
-	setCurrentEventHandler(eventHandler) {
-		this.currentEventHandler = eventHandler;
+		this.game = game;
+
+		window.addEventListener("keydown", this);
+		window.addEventListener("mousemove", this);
 	}
 
 	handleEvent(e) {
-		if (e.type == "keydown") {
-			this.eventKeydown(e);
+
+		switch (e.type) {
+			case "keydown":
+				this.eventKeydown(e);
+				break;
+
+			case "mousemove":
+				this.eventMousemove(e);
+				break;
+
+			default:
+				break;
 		}
 	}
 
 	eventKeydown(e) {
 		const keyCode = e.keyCode;
-		this.currentEventHandler.handleKeydown(keyCode);
+		this.game.screen.eventHandler.handleKeydown(keyCode);
+	}
+
+	eventMousemove(e) {
+		this.game.screen.eventHandler.handleMousemove(e);
 	}
 }

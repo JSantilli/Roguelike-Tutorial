@@ -1,15 +1,16 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
-import { GameOverEventHandler } from "./eventHandlers.js";
+import { Color } from "./color.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
+import { ScreenDefinitions } from "./screens.js";
 
 export const EntityMixins = {};
 
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
-	act: function() {
+	act: function () {
 		this.map.game.refresh();
 		this.map.game.engine.lock();
 
@@ -28,7 +29,7 @@ EntityMixins.PlayerActor = {
 
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
-	act: function() {
+	act: function () {
 		if (!this.hasMixin("Destructible") || this.isAlive) {
 			const target = this.map.player;
 			const dx = target.x - this.x;
@@ -55,8 +56,8 @@ EntityMixins.HostileEnemy = {
 		}
 	},
 
-	getPathTo: function(source, target) {
-		const pathfinder = new ROT.Path.AStar(target.x, target.y, function(x, y) {
+	getPathTo: function (source, target) {
+		const pathfinder = new ROT.Path.AStar(target.x, target.y, function (x, y) {
 			const blockingEntities = source.map.getBlockingEntities(x, y);
 			if (blockingEntities.length !== 0) {
 				blockingEntities.forEach(entity => {
@@ -66,10 +67,10 @@ EntityMixins.HostileEnemy = {
 				});
 			}
 			return source.map.isTileInBounds(x, y) && source.map.isTileWalkable(x, y);
-		}, {topology: 8});
+		}, { topology: 8 });
 
 		const path = [];
-		pathfinder.compute(source.x, source.y, function(x, y) {
+		pathfinder.compute(source.x, source.y, function (x, y) {
 			path.push([x, y]);
 		});
 		path.shift(); // The first element in the path array is the source position. Discard it.
@@ -79,7 +80,7 @@ EntityMixins.HostileEnemy = {
 
 EntityMixins.Destructible = {
 	name: "Destructible",
-	init: function({
+	init: function ({
 		maxHitPoints = 10,
 		hitPoints,
 		defense,
@@ -92,7 +93,7 @@ EntityMixins.Destructible = {
 	},
 
 	setHitPoints(value) {
-		this.hitPoints = Math.max(0, Math.min(value, this.maxHitPoints));
+		this.hitPoints = ROT.Util.clamp(value, 0, this.maxHitPoints);
 		if (this.hitPoints === 0) {
 			this.die();
 		}
@@ -103,15 +104,18 @@ EntityMixins.Destructible = {
 		// TODO: I should probably remove the entity from the scheduler when they die.
 
 		let deathMessage = "";
+		let deathMessageColor;
 
 		if (this === this.map.player) {
 			deathMessage = "You died!";
-			this.map.game.setCurrentEventHandler(GameOverEventHandler);
+			deathMessageColor = Color.PlayerDie;
+			this.map.game.switchScreen(ScreenDefinitions.GameOver);
 		} else {
 			deathMessage = this.name + " is dead!";
+			deathMessageColor = Color.EnemyDie;
 		}
-		
-		console.log(deathMessage);
+
+		this.map.game.messageLog.addMessage(deathMessage, deathMessageColor);
 
 		this.isAlive = false;
 		this.blocksMovement = false;
@@ -123,7 +127,7 @@ EntityMixins.Destructible = {
 
 EntityMixins.Attacker = {
 	name: "Attacker",
-	init: function({
+	init: function ({
 		power
 	} = {}) {
 		this.power = power;

@@ -105,7 +105,7 @@ export class Map {
 	}
 
 	getEntitiesAt(x, y) {
-		return this.entities[x + "," + y];
+		return this.entities[x + "," + y] || null;
 	}
 
 	addEntityAt(entity, x, y) {
@@ -151,8 +151,6 @@ export class Map {
 		// TODO: it would be cool to somehow remove the player reference from this
 		// 	Maybe have a list of 'fov entities' that each have their fov computed each render
 		//	Could be interesting for having an fov of a security camera or something like it
-
-		console.log("HP: " + this.player.hitPoints + "/" + this.player.maxHitPoints);
 
 		this.visible = {};
 

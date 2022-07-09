@@ -1,5 +1,7 @@
 'use strict';
 
+import { Color } from "./color.js";
+
 export class Action {
 
 	entity;
@@ -13,12 +15,41 @@ export class Action {
 	perform() {}
 }
 
-export class WaitAction extends Action {
+export class ChangeViewAction extends Action {
+
+	newView;
+
+	constructor(entity, newView) {
+		super(entity);
+
+		this.newView = newView;
+	}
 
 	perform() {
-		console.log("The " + this.entity.name + " waits.");
-		return;
+
+		this.map.game.switchScreen(this.newView);
 	}
+}
+
+export class ScrollAction extends Action {
+
+	cursorAdjust;
+
+	constructor(entity, cursorAdjust) {
+		super(entity);
+
+		this.cursorAdjust = cursorAdjust;
+	}
+	
+	perform () {
+
+		this.map.game.screen.scrollList(this.cursorAdjust);
+	}
+}
+
+export class WaitAction extends Action {
+
+	perform() {}
 }
 
 export class ActionWithDirection extends Action {
@@ -44,6 +75,7 @@ export class ActionWithDirection extends Action {
 export class BumpAction extends ActionWithDirection {
 
 	perform() {
+
 		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
 			return new MeleeAction(this.entity, this.dx, this.dy).perform();
 		} else {
@@ -55,6 +87,7 @@ export class BumpAction extends ActionWithDirection {
 export class MoveAction extends ActionWithDirection {
 
 	perform() {
+
 		if (!this.map.isTileInBounds(this.destinationX, this.destinationY)) {
 			// Destination out of bounds
 			return;
@@ -77,6 +110,7 @@ export class MoveAction extends ActionWithDirection {
 export class MeleeAction extends ActionWithDirection {
 
 	perform() {
+
 		const targets = this.map.getBlockingEntities(this.destinationX, this.destinationY);
 
 		if (targets.length === 0) {
@@ -84,15 +118,28 @@ export class MeleeAction extends ActionWithDirection {
 		}
 
 		targets.forEach(target => {
-			const attackDescription = this.entity.name + " attacks " + target.name;
+
+			let attackColor = Color.EnemyAttack;
+			if (this.entity === this.map.player) {
+				attackColor = Color.PlayerAttack;
+			}
+
+			const attackDescription = ROT.Util.capitalize(this.entity.name) + " attacks " + target.name;
+			let attackMessage;
 
 			const damage = this.entity.power - target.defense;
 			if (damage > 0) {
-				console.log(attackDescription + " for " + damage + " hit points.");
-				target.setHitPoints(target.hitPoints - damage);
+				attackMessage = attackDescription + " for " + damage + " hit points.";
 			} else {
-				console.log(attackDescription + " but does no damage.");
+				attackMessage = attackDescription + " but does no damage.";
 			}
+
+			this.map.game.messageLog.addMessage(attackMessage, attackColor);
+
+			if (damage > 0) {
+				target.setHitPoints(target.hitPoints - damage);
+			}
+
 		});
 	}
 }
