@@ -1,6 +1,7 @@
 // TODO: I kind of like this pattern for Screens
 
 import { GameOverEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
+import { drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
 export const ScreenDefinitions = {};
@@ -34,7 +35,6 @@ ScreenDefinitions.ViewMessages = {
 		}
 
 		this.display = new ROT.Display(displayOptions);
-		console.log(this.display);
 		this.displayElement = document.body.appendChild(this.display.getContainer());
 		this.displayElement.style = "position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; margin:auto;";
 
@@ -57,7 +57,9 @@ ScreenDefinitions.ViewMessages = {
 
 		this.display.clear();
 
-		// TODO: Draw border here
+		drawFrame(this.display, 0, 0, this.displayWidth, this.displayHeight);
+
+		drawCenteredText(this.display, 0, 0, this.displayWidth, "┤Message History├");
 
 		this.game.messageLog.render(this.display, 1, 1, this.displayWidth - 2, this.displayHeight - 2, this.cursorPosition);
 	},
