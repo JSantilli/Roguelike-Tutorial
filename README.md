@@ -18,7 +18,9 @@ J K L
 
 M , .
 
-for 8-direction movement. (Sorry, I have a weird keyboard. I'll add different key-bindings in later)
+for 8-direction movement. (Sorry, I have a weird keyboard. I'll add different key-bindings in later.)
+
+V to pull up the message log.
 
 <br>
 
