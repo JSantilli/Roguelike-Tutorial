@@ -105,7 +105,7 @@ export class Map {
 	}
 
 	getEntitiesAt(x, y) {
-		return this.entities[x + "," + y];
+		return this.entities[x + "," + y] || null;
 	}
 
 	addEntityAt(entity, x, y) {

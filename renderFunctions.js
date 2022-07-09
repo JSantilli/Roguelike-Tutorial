@@ -46,3 +46,8 @@ export function drawCenteredText(display, x, y, width, text) {
 	const textStart = Math.floor(x + (width / 2) - (text.length / 2));
 	display.drawText(textStart, y, text);
 }
+
+export function clearLine(display, x, y, width = display.getOptions().width - x) {
+	
+	display.drawText(x, y, " ".repeat(width));
+}

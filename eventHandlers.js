@@ -1,6 +1,7 @@
 'use strict';
 
 import { BumpAction, ScrollAction, ChangeViewAction, WaitAction } from "./action.js";
+import { clearLine } from "./renderFunctions.js";
 import { ScreenDefinitions } from "./screens.js";
 
 class EventHandler {
@@ -67,6 +68,21 @@ export class MainGameEventHandler extends EventHandler {
 		this.game.engine.unlock();
 	}
 
+	handleMousemove(event) {
+		
+		const [x, y] = this.game.display.eventToPosition(event);
+
+		clearLine(this.game.display, 21, 44);
+
+		if (this.game.map.isTileVisible(x, y)) {
+			const entities = this.game.map.getEntitiesAt(x, y);
+			if (entities) {
+				const entityArray = Array.from(entities);
+				const entityString = ROT.Util.capitalize(entityArray.map(entity => entity.name).join(", "));
+				this.game.display.drawText(21, 44, entityString);
+			}
+		}
+	}
 }
 
 export class GameOverEventHandler extends EventHandler {
