@@ -28,7 +28,10 @@ export class Game {
 	screen;
 	
 	map;
-	maxMonstersPerRoom; // TODO: does this really need to be defined on the Game?
+
+	// TODO: do these really need to be defined on the Game?
+	maxMonstersPerRoom;
+	maxItemsPerRoom;
 
 	entityFactory;
 
@@ -40,6 +43,7 @@ export class Game {
 		this.mapHeight = 43;
 
 		this.maxMonstersPerRoom = 2;
+		this.maxItemsPerRoom = 2;
 
 		const displayOptions = {
 			width: this.screenWidth,
@@ -70,7 +74,7 @@ export class Game {
 		this.entityFactory = new Factory(Entity);
 		defineEntities(this.entityFactory);
 
-		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
+		placeEntities(this.map, this.maxMonstersPerRoom, this.maxItemsPerRoom, this.entityFactory, this.scheduler);
 
 		for (let i = 0; i < 20; i++) {
 			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Colors.WelcomeText, false);

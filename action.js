@@ -146,3 +146,27 @@ export class MeleeAction extends ActionWithDirection {
 		});
 	}
 }
+
+export class ItemAction extends Action {
+
+	item;
+
+	target;
+
+	constructor(entity, item, target) {
+		super(entity);
+
+		this.item = item;
+
+		if (target) {
+			this.target = target;
+		} else {
+			this.target = this.entity;
+		}
+	}
+
+	perform() {
+
+		this.item.activate(target);
+	}
+}

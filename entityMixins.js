@@ -2,6 +2,7 @@
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
 import { Colors } from "./colors.js";
+import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
 import { ScreenDefinitions } from "./screens.js";
@@ -11,7 +12,7 @@ export const EntityMixins = {};
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
 	act: function () {
-		
+
 		this.map.game.refresh();
 		this.map.game.engine.lock();
 
@@ -31,7 +32,7 @@ EntityMixins.PlayerActor = {
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	act: function () {
-		
+
 		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
 			const target = this.map.player;
@@ -71,7 +72,7 @@ EntityMixins.HostileEnemy = {
 	},
 
 	getPathTo: function (source, target) {
-		
+
 		const pathfinder = new ROT.Path.AStar(target.x, target.y, function (x, y) {
 			const blockingEntities = source.map.getBlockingEntities(x, y);
 			if (blockingEntities.length !== 0) {
@@ -101,7 +102,7 @@ EntityMixins.Destructible = {
 		defense,
 		isAlive = true
 	} = {}) {
-		
+
 		this.maxHitPoints = maxHitPoints;
 		this.hitPoints = Math.min(hitPoints || maxHitPoints, maxHitPoints);
 		this.defense = defense;
@@ -109,7 +110,7 @@ EntityMixins.Destructible = {
 	},
 
 	setHitPoints(value) {
-		
+
 		this.hitPoints = ROT.Util.clamp(value, 0, this.maxHitPoints);
 		if (this.hitPoints === 0) {
 			this.die();
@@ -117,7 +118,7 @@ EntityMixins.Destructible = {
 	},
 
 	heal(amount) {
-		
+
 		if (this.hitPoints === this.maxHitPoints) {
 			return 0;
 		}
@@ -170,7 +171,33 @@ EntityMixins.Attacker = {
 	init: function ({
 		power
 	} = {}) {
-		
+
 		this.power = power;
+	}
+}
+
+EntityMixins.HealingConsumable = {
+	name: "Consumable",
+	init: function ({
+		healingAmount
+	} = {}) {
+
+		this.healingAmount = healingAmount;
+	},
+
+	activate(target) {
+
+		const consumer = target;
+		
+		if (consumer.hasMixin("Destructible")) {
+			const hitPointsRecovered = consumer.heal(this.healingAmount);
+
+			if (hitPointsRecovered > 0) {
+				const healingMessage = "You consume the " + this.name + ", and recover " + hitPointsRecovered + " HP!";
+				this.map.game.messageLog.addMessage(healingMessage, Colors.HealthRecovered);
+			} else {
+				throw new ImpossibleError("Your health is already full.");
+			}
+		}
 	}
 }

@@ -56,6 +56,19 @@ const entityTemplates = [
 	]
 },
 
+{
+	name: "Health Potion",
+	character: "!",
+	foreground: Colors.HealthPotion,
+	background: Colors.HealthPotionBG,
+	RenderOrder: RenderOrder.Item,
+	blocksMovement: false,
+	mixins: [
+		[EntityMixins.HealingConsumable,
+		{ healingAmount: 4 }]
+	]
+},
+
 ];
 
 /* 

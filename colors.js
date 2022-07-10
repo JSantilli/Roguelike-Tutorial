@@ -27,6 +27,9 @@ Colors.TrollBG = Colors.TileFloorBG;
 Colors.Corpse = "#BF0000";
 Colors.CorpseBG = Colors.TileFloorBG;
 
+Colors.HealthPotion = "#7F00FF";
+Colors.HealthPotionBG = Colors.TileFloorBG;
+
 Colors.PlayerAttack = "#007F00";
 Colors.EnemyAttack = "#FFC0C0";
 
