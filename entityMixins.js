@@ -11,6 +11,7 @@ export const EntityMixins = {};
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
 	act: function () {
+		
 		this.map.game.refresh();
 		this.map.game.engine.lock();
 
@@ -30,6 +31,7 @@ EntityMixins.PlayerActor = {
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	act: function () {
+		
 		if (!this.hasMixin("Destructible") || this.isAlive) {
 			const target = this.map.player;
 			const dx = target.x - this.x;
@@ -38,7 +40,9 @@ EntityMixins.HostileEnemy = {
 
 			if (this.map.isTileVisible(this.x, this.y)) {
 				if (distance <= 1) {
-					new MeleeAction(this, dx, dy).perform();
+					if (this.hasMixin("Attacker")) {
+						new MeleeAction(this, dx, dy).perform();
+					}
 					return;
 				} else {
 					this.path = this.getPathTo(this, target);
@@ -52,11 +56,11 @@ EntityMixins.HostileEnemy = {
 			}
 
 			new WaitAction(this).perform();
-			return;
 		}
 	},
 
 	getPathTo: function (source, target) {
+		
 		const pathfinder = new ROT.Path.AStar(target.x, target.y, function (x, y) {
 			const blockingEntities = source.map.getBlockingEntities(x, y);
 			if (blockingEntities.length !== 0) {
@@ -86,6 +90,7 @@ EntityMixins.Destructible = {
 		defense,
 		isAlive = true
 	} = {}) {
+		
 		this.maxHitPoints = maxHitPoints;
 		this.hitPoints = Math.min(hitPoints || maxHitPoints, maxHitPoints);
 		this.defense = defense;
@@ -93,10 +98,34 @@ EntityMixins.Destructible = {
 	},
 
 	setHitPoints(value) {
+		
 		this.hitPoints = ROT.Util.clamp(value, 0, this.maxHitPoints);
 		if (this.hitPoints === 0) {
 			this.die();
 		}
+	},
+
+	heal(amount) {
+		
+		if (this.hitPoints === this.maxHitPoints) {
+			return 0;
+		}
+
+		let newHitPointValue = this.hitPoints + amount;
+
+		if (newHitPointValue > this.maxHitPoints) {
+			newHitPointValue = this.maxHitpoints;
+		}
+
+		const amountRecovered = newHitPointValue - this.hitPoints;
+
+		this.setHitPoints(newHitPointValue);
+
+		return amountRecovered;
+	},
+
+	takeDamage(amount) {
+		this.setHitPoints(this.hitPoints - amount);
 	},
 
 	die() {
@@ -130,6 +159,7 @@ EntityMixins.Attacker = {
 	init: function ({
 		power
 	} = {}) {
+		
 		this.power = power;
 	}
 }

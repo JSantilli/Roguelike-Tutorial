@@ -137,6 +137,8 @@ export class MeleeAction extends ActionWithDirection {
 			this.map.game.messageLog.addMessage(attackMessage, attackColor);
 
 			if (damage > 0) {
+				// TODO: Eventually I should be calling into the target 'takeDamage' function
+				// That function can instead do the work of mitigating damage with defense?
 				target.setHitPoints(target.hitPoints - damage);
 			}
 
