@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
 import { Factory } from "./factory.js";
@@ -73,11 +73,11 @@ export class Game {
 		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
 
 		for (let i = 0; i < 20; i++) {
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Colors.WelcomeText, false);
 		}
 
 		this.engine.start();

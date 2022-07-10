@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { EntityMixins } from "./entityMixins.js";
 import { RenderOrder } from "./renderOrder.js";
 
@@ -11,8 +11,8 @@ const entityTemplates = [
 {
 	name: "player",
 	character: "@",
-	foreground: new Color(255, 255, 255),
-	background: new Color(200, 180, 50),
+	foreground: Colors.Player,
+	background: Colors.PlayerBG,
 	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [
@@ -27,8 +27,8 @@ const entityTemplates = [
 {
 	name: "orc",
 	character: "o",
-	foreground: new Color(63, 127, 63),
-	background: new Color(200, 180, 50),
+	foreground: Colors.Orc,
+	background: Colors.OrcBG,
 	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [
@@ -43,8 +43,8 @@ const entityTemplates = [
 {
 	name: "troll",
 	character: "T",
-	foreground: new Color(0, 127, 0),
-	background: new Color(200, 180, 50),
+	foreground: Colors.Troll,
+	background: Colors.TrollBG,
 	renderOrder: RenderOrder.Alive,
 	blocksMovement: true,
 	mixins: [

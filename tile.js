@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { Glyph } from "./glyph.js";
 
 export class Tile {
@@ -28,12 +28,12 @@ Tile.NullTile = new Tile();
 Tile.FloorTile = new Tile({
 	glyphProperties: {
 		character: ' ',
-		foreground: new Color(255, 255, 255),
-		background: new Color(200, 180, 50),
+		foreground: Colors.TileFloorFG,
+		background: Colors.TileFloorBG,
 		hasDarkGlyph: true,
 		darkProperties: {
-			foreground: new Color(255, 255, 255),
-			background: new Color(50, 50, 150)
+			foreground: Colors.TileFloorDarkFG,
+			background: Colors.TileFloorDarkBG
 		}
 	},
 	walkable: true,
@@ -43,12 +43,12 @@ Tile.FloorTile = new Tile({
 Tile.WallTile = new Tile({
 	glyphProperties: {
 		character: ' ',
-		foreground: new Color(255, 255, 255),
-		background: new Color(130, 110, 50),
+		foreground: Colors.TileWallFG,
+		background: Colors.TileWallBG,
 		hasDarkGlyph: true,
 		darkProperties: {
-			foreground: new Color(255, 255, 255),
-			background: new Color(0, 0, 100)
+			foreground: Colors.TileWallDarkFG,
+			background: Colors.TileWallDarkBG
 		}
 	},
 	walkable: false,

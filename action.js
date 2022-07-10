@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 
 export class Action {
 
@@ -119,9 +119,9 @@ export class MeleeAction extends ActionWithDirection {
 
 		targets.forEach(target => {
 
-			let attackColor = Color.EnemyAttack;
+			let attackColor = Colors.EnemyAttack;
 			if (this.entity === this.map.player) {
-				attackColor = Color.PlayerAttack;
+				attackColor = Colors.PlayerAttack;
 			}
 
 			const attackDescription = ROT.Util.capitalize(this.entity.name) + " attacks " + target.name;

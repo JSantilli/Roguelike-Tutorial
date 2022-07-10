@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 
 export class Glyph {
 
@@ -11,8 +11,8 @@ export class Glyph {
 
 	constructor({
 		character = ' ',
-		foreground = new Color(0, 0, 0),
-		background = new Color(0, 0, 0),
+		foreground = Colors.Black,
+		background = Colors.Black,
 		hasDarkGlyph = false,
 		darkGlyph = null,
 		darkProperties = {},
@@ -31,6 +31,6 @@ export class Glyph {
 
 Glyph.corpseGlyph = new Glyph({
 	character: "%",
-	foreground: new Color(191, 0, 0),
-	background: new Color(200, 180, 50)
+	foreground: Colors.Corpse,
+	background: Colors.CorpseBG
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
 import { ScreenDefinitions } from "./screens.js";
@@ -108,11 +108,11 @@ EntityMixins.Destructible = {
 
 		if (this === this.map.player) {
 			deathMessage = "You died!";
-			deathMessageColor = Color.PlayerDie;
+			deathMessageColor = Colors.PlayerDie;
 			this.map.game.switchScreen(ScreenDefinitions.GameOver);
 		} else {
 			deathMessage = this.name + " is dead!";
-			deathMessageColor = Color.EnemyDie;
+			deathMessageColor = Colors.EnemyDie;
 		}
 
 		this.map.game.messageLog.addMessage(deathMessage, deathMessageColor);

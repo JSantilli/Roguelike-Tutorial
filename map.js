@@ -178,7 +178,7 @@ export class Map {
 							glyph = entities[0].glyph;
 						}
 					}
-					display.draw(x, y, glyph.character, glyph.foreground.colorStr, glyph.background.colorStr);
+					display.draw(x, y, glyph.character, glyph.foreground, glyph.background);
 				}
 			}
 		}
