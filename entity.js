@@ -9,8 +9,9 @@ export class Entity {
 	x;
 	y;
 
+	// blocksMovement should eventually become a mixin
 	blocksMovement;
-	
+
 	glyph;
 
 	renderOrder;
@@ -18,6 +19,7 @@ export class Entity {
 	map;
 
 	mixins;
+	mixinGroups;
 
 	constructor({
 		name = "<Unnamed>",
@@ -42,12 +44,16 @@ export class Entity {
 		this.blocksMovement = blocksMovement;
 
 		this.mixins = {};
+		this.mixinGroups = {};
 
 		mixins.forEach(mixinDeclaration => {
 			const [mixin, parameters] = mixinDeclaration;
 			this.mixins[mixin.name] = true;
+			if (mixin.group) {
+				this.mixinGroups[mixin.group] = true;
+			}
 			for (const key in mixin) {
-				if (key !== 'name' && key !== 'init') {
+				if (key !== "name" && key !== "group" && key !== "init") {
 					this[key] = mixin[key];
 				}
 			}
@@ -57,11 +63,12 @@ export class Entity {
 		});
 	}
 
-	setMap(map) {
-		this.map = map;
-	}
+	setPosition(x, y, map) {
 
-	setPosition(x, y) {
+		if (map) {
+			this.map = map;
+		}
+
 		const oldX = this.x;
 		const oldY = this.y;
 
@@ -76,12 +83,8 @@ export class Entity {
 	hasMixin(name) {
 		return this.mixins[name];
 	}
-}
 
-// TODO:
-// Actors, items, other stuff is all an Entity
-	// An entity is an actor or item etc for the purpose of driving game behavior
-		// if it has an Actor, Item, etc mixin
-		// All behavior is defined as some kind of mixin
-		// Blocks movement? mixin
-		// etc
+	hasGroup(name) {
+		return this.mixinGroups[name];
+	}
+}

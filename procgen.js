@@ -70,8 +70,6 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
 				} while (!map.isEmptyTile(x, y));
 
-				console.log('placing item');
-				console.log(x, y);
 				entityFactory.create("Health Potion", map, x, y);
 			}
 		}

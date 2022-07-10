@@ -77,7 +77,7 @@ export class BumpAction extends ActionWithDirection {
 
 	perform() {
 
-		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
+		if (this.map.getBlockingEntities(this.destinationX, this.destinationY)) {
 			return new MeleeAction(this.entity, this.dx, this.dy).perform();
 		} else {
 			return new MoveAction(this.entity, this.dx, this.dy).perform();
@@ -99,7 +99,7 @@ export class MoveAction extends ActionWithDirection {
 			throw new ImpossibleError("The way is blocked.");
 		}
 
-		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
+		if (this.map.getBlockingEntities(this.destinationX, this.destinationY)) {
 			// Destination contains an entity that blocks movement
 			throw new ImpossibleError("The way is blocked.");
 		}
@@ -114,7 +114,7 @@ export class MeleeAction extends ActionWithDirection {
 
 		const targets = this.map.getBlockingEntities(this.destinationX, this.destinationY);
 
-		if (targets.length === 0) {
+		if (!targets) {
 			throw new ImpossibleError("Nothing to attack.");
 		}
 

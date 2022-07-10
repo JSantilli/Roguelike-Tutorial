@@ -8,66 +8,72 @@ import { RenderOrder } from "./renderOrder.js";
 
 const entityTemplates = [
 
-{
-	name: "player",
-	character: "@",
-	foreground: Colors.Player,
-	background: Colors.PlayerBG,
-	renderOrder: RenderOrder.Alive,
-	blocksMovement: true,
-	mixins: [
-		[EntityMixins.PlayerActor],
-		[EntityMixins.Destructible,
-		{ maxHitPoints: 30, defense: 2 }],
-		[EntityMixins.Attacker,
-		{ power: 5 }],
-	]
-},
+	{
+		name: "player",
+		character: "@",
+		foreground: Colors.Player,
+		background: Colors.PlayerBG,
+		renderOrder: RenderOrder.Alive,
+		blocksMovement: true,
+		mixins: [
+			[EntityMixins.PlayerActor],
+			[EntityMixins.Destructible,
+			{ maxHitPoints: 30, defense: 2 }],
+			[EntityMixins.Attacker,
+			{ power: 5 }],
+			[EntityMixins.InventoryHolder,
+			{ capacity: 26 }],
+		]
+	},
 
-{
-	name: "orc",
-	character: "o",
-	foreground: Colors.Orc,
-	background: Colors.OrcBG,
-	renderOrder: RenderOrder.Alive,
-	blocksMovement: true,
-	mixins: [
-		[EntityMixins.HostileEnemy],
-		[EntityMixins.Destructible,
-		{ maxHitPoints: 10, defense: 0 }],
-		[EntityMixins.Attacker,
-		{ power: 3 }],
-	]
-},
+	{
+		name: "orc",
+		character: "o",
+		foreground: Colors.Orc,
+		background: Colors.OrcBG,
+		renderOrder: RenderOrder.Alive,
+		blocksMovement: true,
+		mixins: [
+			[EntityMixins.HostileEnemy],
+			[EntityMixins.Destructible,
+			{ maxHitPoints: 10, defense: 0 }],
+			[EntityMixins.Attacker,
+			{ power: 3 }],
+			[EntityMixins.InventoryHolder,
+			{ capacity: 0 }],
+		]
+	},
 
-{
-	name: "troll",
-	character: "T",
-	foreground: Colors.Troll,
-	background: Colors.TrollBG,
-	renderOrder: RenderOrder.Alive,
-	blocksMovement: true,
-	mixins: [
-		[EntityMixins.HostileEnemy],
-		[EntityMixins.Destructible,
-		{ maxHitPoints: 16, defense: 1 }],
-		[EntityMixins.Attacker,
-		{ power: 4 }],
-	]
-},
+	{
+		name: "troll",
+		character: "T",
+		foreground: Colors.Troll,
+		background: Colors.TrollBG,
+		renderOrder: RenderOrder.Alive,
+		blocksMovement: true,
+		mixins: [
+			[EntityMixins.HostileEnemy],
+			[EntityMixins.Destructible,
+			{ maxHitPoints: 16, defense: 1 }],
+			[EntityMixins.Attacker,
+			{ power: 4 }],
+			[EntityMixins.InventoryHolder,
+			{ capacity: 0 }],
+		]
+	},
 
-{
-	name: "Health Potion",
-	character: "!",
-	foreground: Colors.HealthPotion,
-	background: Colors.HealthPotionBG,
-	RenderOrder: RenderOrder.Item,
-	blocksMovement: false,
-	mixins: [
-		[EntityMixins.HealingConsumable,
-		{ healingAmount: 4 }]
-	]
-},
+	{
+		name: "Health Potion",
+		character: "!",
+		foreground: Colors.HealthPotion,
+		background: Colors.HealthPotionBG,
+		RenderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.HealingConsumable,
+			{ healingAmount: 4 }]
+		]
+	},
 
 ];
 

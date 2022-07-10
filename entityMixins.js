@@ -11,7 +11,9 @@ export const EntityMixins = {};
 
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
-	act: function () {
+	group: "Actor",
+	
+	act() {
 
 		this.map.game.refresh();
 		this.map.game.engine.lock();
@@ -31,7 +33,9 @@ EntityMixins.PlayerActor = {
 
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
-	act: function () {
+	group: "Actor",
+	
+	act() {
 
 		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
@@ -71,11 +75,11 @@ EntityMixins.HostileEnemy = {
 		}
 	},
 
-	getPathTo: function (source, target) {
+	getPathTo(source, target) {
 
 		const pathfinder = new ROT.Path.AStar(target.x, target.y, function (x, y) {
 			const blockingEntities = source.map.getBlockingEntities(x, y);
-			if (blockingEntities.length !== 0) {
+			if (blockingEntities) {
 				blockingEntities.forEach(entity => {
 					if (entity !== source && entity !== target) {
 						return false;
@@ -96,7 +100,8 @@ EntityMixins.HostileEnemy = {
 
 EntityMixins.Destructible = {
 	name: "Destructible",
-	init: function ({
+	
+	init({
 		maxHitPoints = 10,
 		hitPoints,
 		defense,
@@ -168,7 +173,8 @@ EntityMixins.Destructible = {
 
 EntityMixins.Attacker = {
 	name: "Attacker",
-	init: function ({
+	
+	init({
 		power
 	} = {}) {
 
@@ -176,9 +182,36 @@ EntityMixins.Attacker = {
 	}
 }
 
+EntityMixins.InventoryHolder = {
+	name: "InventoryHolder",
+	
+	init({
+		capacity
+	} = {}) {
+
+		this.inventoryCapacity = capacity;
+		this.items = [];
+	},
+
+	drop(item) {
+		
+		const index = this.items.indexOf(item);
+		if (index > -1) {
+			this.items.splice(index, 1);
+		}
+
+		item.setposition(this.x, this.y, this.map);
+
+		const dropMessage = "You dropped the " + item.name + ".";
+		this.map.game.messageLog.addMessage(dropMessage);
+	}
+}
+
 EntityMixins.HealingConsumable = {
-	name: "Consumable",
-	init: function ({
+	name: "HealingConsumable",
+	group: "Item",
+	
+	init({
 		healingAmount
 	} = {}) {
 
