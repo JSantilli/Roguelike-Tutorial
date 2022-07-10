@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 export const Colors = {};
 
 Colors.White = "#FFFFFF";

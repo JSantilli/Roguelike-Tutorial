@@ -1,6 +1,7 @@
 'use strict';
 
 import { Colors } from "./colors.js";
+import { ImpossibleError } from "./exceptions.js";
 
 export class Action {
 
@@ -90,17 +91,17 @@ export class MoveAction extends ActionWithDirection {
 
 		if (!this.map.isTileInBounds(this.destinationX, this.destinationY)) {
 			// Destination out of bounds
-			return;
+			throw new ImpossibleError("The way is blocked.");
 		}
 
 		if (!this.map.isTileWalkable(this.destinationX, this.destinationY)) {
 			// Destination is not walkble
-			return;
+			throw new ImpossibleError("The way is blocked.");
 		}
 
 		if (this.map.getBlockingEntities(this.destinationX, this.destinationY).length !== 0) {
 			// Destination contains an entity that blocks movement
-			return;
+			throw new ImpossibleError("The way is blocked.");
 		}
 
 		this.entity.setPosition(this.destinationX, this.destinationY);
@@ -114,7 +115,7 @@ export class MeleeAction extends ActionWithDirection {
 		const targets = this.map.getBlockingEntities(this.destinationX, this.destinationY);
 
 		if (targets.length === 0) {
-			return;
+			throw new ImpossibleError("Nothing to attack.");
 		}
 
 		targets.forEach(target => {

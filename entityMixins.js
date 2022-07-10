@@ -32,6 +32,7 @@ EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	act: function () {
 		
+		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
 			const target = this.map.player;
 			const dx = target.x - this.x;
@@ -41,7 +42,12 @@ EntityMixins.HostileEnemy = {
 			if (this.map.isTileVisible(this.x, this.y)) {
 				if (distance <= 1) {
 					if (this.hasMixin("Attacker")) {
-						new MeleeAction(this, dx, dy).perform();
+						try {
+							new MeleeAction(this, dx, dy).perform();
+						} catch (e) {
+							// AI errors get ignored for now.
+							console.log(e);
+						}
 					}
 					return;
 				} else {
@@ -51,7 +57,12 @@ EntityMixins.HostileEnemy = {
 
 			if (this.path && this.path.length > 0) {
 				const [destinationX, destinationY] = this.path.shift();
-				new MoveAction(this, destinationX - this.x, destinationY - this.y).perform();
+				try {
+					new MoveAction(this, destinationX - this.x, destinationY - this.y).perform();
+				} catch (e) {
+					// AI errors get ignored for now.
+					console.log(e);
+				}
 				return;
 			}
 

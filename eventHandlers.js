@@ -1,6 +1,8 @@
 'use strict';
 
 import { BumpAction, ScrollAction, ChangeViewAction, WaitAction } from "./action.js";
+import { Colors } from "./colors.js";
+import { ImpossibleError } from "./exceptions.js";
 import { clearLine } from "./renderFunctions.js";
 import { ScreenDefinitions } from "./screens.js";
 
@@ -50,21 +52,27 @@ export class MainGameEventHandler extends EventHandler {
 
 	handleKeydown(keyCode) {
 		
-		if (keyCode in this.directionKeys) {
-			const [dx, dy] = ROT.DIRS[8][this.directionKeys[keyCode]];
-			new BumpAction(this.game.map.player, dx, dy).perform();
+		try {
+			if (keyCode in this.directionKeys) {
+				const [dx, dy] = ROT.DIRS[8][this.directionKeys[keyCode]];
+				new BumpAction(this.game.map.player, dx, dy).perform();
+			}
+			
+			else if (keyCode in this.waitKeys) {
+				new WaitAction(this.game.map.player).perform();
+			}
+	
+			else if (keyCode in this.viewKeys) {
+				new ChangeViewAction(this.game.map.player, ScreenDefinitions.ViewMessages).perform();
+			}
+		} catch (e) {
+			if (e instanceof ImpossibleError) {
+				this.game.messageLog.addMessage(e.message, Colors.Impossible);
+				this.game.refresh();
+				return;
+			}
 		}
 		
-		else if (keyCode in this.waitKeys) {
-			new WaitAction(this.game.map.player).perform();
-		}
-
-		else if (keyCode in this.viewKeys) {
-			new ChangeViewAction(this.game.map.player, ScreenDefinitions.ViewMessages).perform();
-		}
-		
-		// TODO: only certain actions will unlock the engine
-		// For example, hitting the view key to pull up the message log shouldn't advance time
 		this.game.engine.unlock();
 	}
 
