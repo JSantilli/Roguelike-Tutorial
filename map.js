@@ -218,6 +218,7 @@ export class Map {
 							glyph = glyph.darkGlyph;
 						}
 					} else {
+						// TODO: my render order sort doesn't seem to be working properly
 						if (this.getEntitiesAt(x, y)) {
 							const entities = this.getEntitiesAt(x, y);
 							entities.sort(function (a, b) {

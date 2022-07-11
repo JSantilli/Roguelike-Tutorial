@@ -167,7 +167,10 @@ export class ItemAction extends Action {
 
 	perform() {
 
-		this.item.activate(target);
+		// TODO: Currently each item can only have one mixin 'activateItem' function that fires on use
+		// It would be cool if the activateItem functions could be stored in an array or something
+		// and then iterated over here so it would trigger all effects.
+		this.item.activateItem(this.target);
 	}
 }
 
@@ -194,5 +197,13 @@ export class PickupAction extends Action {
 		} else {
 			throw new ImpossibleError("There is nothing here to pick up.");
 		}
+	}
+}
+
+export class DropAction extends ItemAction {
+
+	perform() {
+		
+		this.entity.dropItem(this.item);
 	}
 }

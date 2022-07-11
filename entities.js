@@ -70,8 +70,9 @@ const entityTemplates = [
 		RenderOrder: RenderOrder.Item,
 		blocksMovement: false,
 		mixins: [
-			[EntityMixins.HealingConsumable,
-			{ healingAmount: 4 }]
+			[EntityMixins.HealingItem,
+			{ healingAmount: 4 }],
+			[EntityMixins.Consumable]
 		]
 	},
 

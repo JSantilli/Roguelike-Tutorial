@@ -131,7 +131,7 @@ EntityMixins.Destructible = {
 		let newHitPointValue = this.hitPoints + amount;
 
 		if (newHitPointValue > this.maxHitPoints) {
-			newHitPointValue = this.maxHitpoints;
+			newHitPointValue = this.maxHitPoints;
 		}
 
 		const amountRecovered = newHitPointValue - this.hitPoints;
@@ -193,22 +193,37 @@ EntityMixins.InventoryHolder = {
 		this.inventory = [];
 	},
 
-	drop(item) {
-		
+	removeItem(item) {
+
 		const index = this.inventory.indexOf(item);
 		if (index > -1) {
 			this.inventory.splice(index, 1);
 		}
+	},
 
-		item.setposition(this.x, this.y, this.map);
+	dropItem(item) {
+		
+		this.removeItem(item);
+
+		item.setPosition(this.x, this.y, this.map);
 
 		const dropMessage = "You dropped the " + item.name + ".";
 		this.map.game.messageLog.addMessage(dropMessage);
+		this.map.game.refresh();
 	}
 }
 
-EntityMixins.HealingConsumable = {
-	name: "HealingConsumable",
+EntityMixins.Consumable = {
+	name: "Consumable",
+	
+	consume(consumer) {
+
+		consumer.removeItem(this);
+	}
+}
+
+EntityMixins.HealingItem = {
+	name: "HealingItem",
 	group: "Item",
 	
 	init({
@@ -218,7 +233,7 @@ EntityMixins.HealingConsumable = {
 		this.healingAmount = healingAmount;
 	},
 
-	activate(target) {
+	activateItem(target) {
 
 		const consumer = target;
 		
@@ -232,5 +247,10 @@ EntityMixins.HealingConsumable = {
 				throw new ImpossibleError("Your health is already full.");
 			}
 		}
+
+		if (this.hasMixin("Consumable") && consumer.hasMixin("InventoryHolder")) {
+			this.consume(consumer);
+		}
+		this.map.game.refresh();
 	}
 }
