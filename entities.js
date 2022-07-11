@@ -67,7 +67,7 @@ const entityTemplates = [
 		character: "!",
 		foreground: Colors.HealthPotion,
 		background: Colors.HealthPotionBG,
-		RenderOrder: RenderOrder.Item,
+		renderOrder: RenderOrder.Item,
 		blocksMovement: false,
 		mixins: [
 			[EntityMixins.HealingItem,

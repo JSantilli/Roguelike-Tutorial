@@ -176,6 +176,8 @@ export class ItemAction extends Action {
 
 export class PickupAction extends Action {
 
+	// TODO: move the meat of this function to the InventoryHolder mixin
+
 	perform() {
 
 		const inventory = this.entity.inventory;
