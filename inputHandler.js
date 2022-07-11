@@ -11,6 +11,7 @@ export class InputHandler {
 
 		window.addEventListener("keydown", this);
 		window.addEventListener("mousemove", this);
+		window.addEventListener("click", this);
 	}
 
 	handleEvent(e) {
@@ -24,17 +25,28 @@ export class InputHandler {
 				this.eventMousemove(e);
 				break;
 
+			case "click":
+				this.eventClick(e);
+				break;
+
 			default:
 				break;
 		}
 	}
 
 	eventKeydown(e) {
+
 		const keyCode = e.keyCode;
 		this.game.screen.eventHandler.handleKeydown(keyCode);
 	}
 
 	eventMousemove(e) {
+
 		this.game.screen.eventHandler.handleMousemove(e);
+	}
+
+	eventClick(e) {
+
+		this.game.screen.eventHandler.handleClick(e);
 	}
 }

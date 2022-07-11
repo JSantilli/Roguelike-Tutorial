@@ -28,7 +28,7 @@ export function generateDungeon(mapWidth, mapHeight) {
 	return map;
 }
 
-export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler) {
+export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFactory, scheduler) {
 
 	const monsters = { // TODO: I probably want to create this weighted list from the entity factory list
 		"orc": 80,
@@ -58,6 +58,19 @@ export function placeEntities(map, maxMonstersPerRoom, entityFactory, scheduler)
 				const monsterString = ROT.RNG.getWeightedValue(monsters);
 				const monster = entityFactory.create(monsterString, map, x, y);
 				scheduler.add(monster, true); // TODO: should the factory create method do this?
+			}
+
+			const numberOfItems = getRandomInt(0, maxItemsPerRoom);
+
+			for (let k = 0; k < numberOfItems; k++) {
+				
+				let x, y;
+				do {
+					x = getRandomInt(room.getLeft() + 1, room.getRight() - 1);
+					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
+				} while (!map.isEmptyTile(x, y));
+
+				entityFactory.create("Health Potion", map, x, y);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { Message } from "./message.js";
 
 export class MessageLog {
@@ -19,7 +19,7 @@ export class MessageLog {
 		return this.messages.length;
 	}
 
-	addMessage(text, foreground = Color.White, stack = true) {
+	addMessage(text, foreground = Colors.White, stack = true) {
 
 		// TODO: I hate this long if condition, but I can't come up with a clean way to refactor it yet.
 		if (

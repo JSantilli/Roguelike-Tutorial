@@ -1,6 +1,6 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 import { defineEntities } from "./entities.js";
 import { Entity } from "./entity.js";
 import { Factory } from "./factory.js";
@@ -28,7 +28,10 @@ export class Game {
 	screen;
 	
 	map;
-	maxMonstersPerRoom; // TODO: does this really need to be defined on the Game?
+
+	// TODO: do these really need to be defined on the Game?
+	maxMonstersPerRoom;
+	maxItemsPerRoom;
 
 	entityFactory;
 
@@ -40,6 +43,7 @@ export class Game {
 		this.mapHeight = 43;
 
 		this.maxMonstersPerRoom = 2;
+		this.maxItemsPerRoom = 2;
 
 		const displayOptions = {
 			width: this.screenWidth,
@@ -70,14 +74,14 @@ export class Game {
 		this.entityFactory = new Factory(Entity);
 		defineEntities(this.entityFactory);
 
-		placeEntities(this.map, this.maxMonstersPerRoom, this.entityFactory, this.scheduler);
+		placeEntities(this.map, this.maxMonstersPerRoom, this.maxItemsPerRoom, this.entityFactory, this.scheduler);
 
 		for (let i = 0; i < 20; i++) {
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Color.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Color.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Colors.WelcomeText, false);
+			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Colors.WelcomeText, false);
 		}
 
 		this.engine.start();

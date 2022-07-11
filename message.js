@@ -14,7 +14,7 @@ export class Message {
 
 	getFullText() {
 
-		const colorFormattedString = "%c{" + this.foreground.colorStr + "}" + this.text;
+		const colorFormattedString = "%c{" + this.foreground + "}" + this.text;
 		
 		if (this.count > 1) {
 			return colorFormattedString + "(x" + this.count + ")"

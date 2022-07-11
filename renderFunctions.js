@@ -1,20 +1,20 @@
 'use strict';
 
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
 
 export function renderHealthBar(display, currentValue, maximumValue, totalWidth) {
 
-	drawBar(display, 0, 45, totalWidth, Color.BarEmpty.colorStr);
+	drawBar(display, 0, 45, totalWidth, Colors.BarEmpty);
 
 	const barWidth = Math.floor((currentValue / maximumValue) * totalWidth);
 	if (barWidth > 0) {
-		drawBar(display, 0, 45, barWidth, Color.BarFilled.colorStr);
+		drawBar(display, 0, 45, barWidth, Colors.BarFilled);
 	}
 
 	const barText = "HP: " + currentValue + "/" + maximumValue;
 	for (let i = 0; i < barText.length; i++) {
 		const character = barText[i];
-		display.drawOver(i + 1, 45, character, Color.BarText.colorStr);
+		display.drawOver(i + 1, 45, character, Colors.BarText);
 	}
 }
 

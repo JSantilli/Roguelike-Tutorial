@@ -1,7 +1,8 @@
 'use strict';
 
 import { MeleeAction, MoveAction, WaitAction } from "./action.js";
-import { Color } from "./color.js";
+import { Colors } from "./colors.js";
+import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
 import { ScreenDefinitions } from "./screens.js";
@@ -10,7 +11,10 @@ export const EntityMixins = {};
 
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
-	act: function () {
+	group: "Actor",
+	
+	act() {
+
 		this.map.game.refresh();
 		this.map.game.engine.lock();
 
@@ -29,7 +33,11 @@ EntityMixins.PlayerActor = {
 
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
-	act: function () {
+	group: "Actor",
+	
+	act() {
+
+		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
 			const target = this.map.player;
 			const dx = target.x - this.x;
@@ -38,7 +46,14 @@ EntityMixins.HostileEnemy = {
 
 			if (this.map.isTileVisible(this.x, this.y)) {
 				if (distance <= 1) {
-					new MeleeAction(this, dx, dy).perform();
+					if (this.hasMixin("Attacker")) {
+						try {
+							new MeleeAction(this, dx, dy).perform();
+						} catch (e) {
+							// AI errors get ignored for now.
+							console.log(e);
+						}
+					}
 					return;
 				} else {
 					this.path = this.getPathTo(this, target);
@@ -47,19 +62,24 @@ EntityMixins.HostileEnemy = {
 
 			if (this.path && this.path.length > 0) {
 				const [destinationX, destinationY] = this.path.shift();
-				new MoveAction(this, destinationX - this.x, destinationY - this.y).perform();
+				try {
+					new MoveAction(this, destinationX - this.x, destinationY - this.y).perform();
+				} catch (e) {
+					// AI errors get ignored for now.
+					console.log(e);
+				}
 				return;
 			}
 
 			new WaitAction(this).perform();
-			return;
 		}
 	},
 
-	getPathTo: function (source, target) {
+	getPathTo(source, target) {
+
 		const pathfinder = new ROT.Path.AStar(target.x, target.y, function (x, y) {
 			const blockingEntities = source.map.getBlockingEntities(x, y);
-			if (blockingEntities.length !== 0) {
+			if (blockingEntities) {
 				blockingEntities.forEach(entity => {
 					if (entity !== source && entity !== target) {
 						return false;
@@ -80,12 +100,14 @@ EntityMixins.HostileEnemy = {
 
 EntityMixins.Destructible = {
 	name: "Destructible",
-	init: function ({
+	
+	init({
 		maxHitPoints = 10,
 		hitPoints,
 		defense,
 		isAlive = true
 	} = {}) {
+
 		this.maxHitPoints = maxHitPoints;
 		this.hitPoints = Math.min(hitPoints || maxHitPoints, maxHitPoints);
 		this.defense = defense;
@@ -93,10 +115,34 @@ EntityMixins.Destructible = {
 	},
 
 	setHitPoints(value) {
+
 		this.hitPoints = ROT.Util.clamp(value, 0, this.maxHitPoints);
 		if (this.hitPoints === 0) {
 			this.die();
 		}
+	},
+
+	heal(amount) {
+
+		if (this.hitPoints === this.maxHitPoints) {
+			return 0;
+		}
+
+		let newHitPointValue = this.hitPoints + amount;
+
+		if (newHitPointValue > this.maxHitPoints) {
+			newHitPointValue = this.maxHitPoints;
+		}
+
+		const amountRecovered = newHitPointValue - this.hitPoints;
+
+		this.setHitPoints(newHitPointValue);
+
+		return amountRecovered;
+	},
+
+	takeDamage(amount) {
+		this.setHitPoints(this.hitPoints - amount);
 	},
 
 	die() {
@@ -108,11 +154,11 @@ EntityMixins.Destructible = {
 
 		if (this === this.map.player) {
 			deathMessage = "You died!";
-			deathMessageColor = Color.PlayerDie;
+			deathMessageColor = Colors.PlayerDie;
 			this.map.game.switchScreen(ScreenDefinitions.GameOver);
 		} else {
 			deathMessage = this.name + " is dead!";
-			deathMessageColor = Color.EnemyDie;
+			deathMessageColor = Colors.EnemyDie;
 		}
 
 		this.map.game.messageLog.addMessage(deathMessage, deathMessageColor);
@@ -127,9 +173,84 @@ EntityMixins.Destructible = {
 
 EntityMixins.Attacker = {
 	name: "Attacker",
-	init: function ({
+	
+	init({
 		power
 	} = {}) {
+
 		this.power = power;
+	}
+}
+
+EntityMixins.InventoryHolder = {
+	name: "InventoryHolder",
+	
+	init({
+		capacity
+	} = {}) {
+
+		this.inventoryCapacity = capacity;
+		this.inventory = [];
+	},
+
+	removeItem(item) {
+
+		const index = this.inventory.indexOf(item);
+		if (index > -1) {
+			this.inventory.splice(index, 1);
+		}
+	},
+
+	dropItem(item) {
+		
+		this.removeItem(item);
+
+		item.setPosition(this.x, this.y, this.map);
+
+		const dropMessage = "You dropped the " + item.name + ".";
+		this.map.game.messageLog.addMessage(dropMessage);
+		this.map.game.refresh();
+	}
+}
+
+EntityMixins.Consumable = {
+	name: "Consumable",
+	
+	consume(consumer) {
+
+		consumer.removeItem(this);
+	}
+}
+
+EntityMixins.HealingItem = {
+	name: "HealingItem",
+	group: "Item",
+	
+	init({
+		healingAmount
+	} = {}) {
+
+		this.healingAmount = healingAmount;
+	},
+
+	activateItem(target) {
+
+		const consumer = target;
+		
+		if (consumer.hasMixin("Destructible")) {
+			const hitPointsRecovered = consumer.heal(this.healingAmount);
+
+			if (hitPointsRecovered > 0) {
+				const healingMessage = "You consume the " + this.name + ", and recover " + hitPointsRecovered + " HP!";
+				this.map.game.messageLog.addMessage(healingMessage, Colors.HealthRecovered);
+			} else {
+				throw new ImpossibleError("Your health is already full.");
+			}
+		}
+
+		if (this.hasMixin("Consumable") && consumer.hasMixin("InventoryHolder")) {
+			this.consume(consumer);
+		}
+		this.map.game.refresh();
 	}
 }

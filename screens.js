@@ -1,6 +1,6 @@
 // TODO: I kind of like this pattern for Screens
 
-import { GameOverEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
+import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
 import { drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
@@ -8,6 +8,7 @@ export const ScreenDefinitions = {};
 
 ScreenDefinitions.MainGame = {
 	eventHandlerClass: MainGameEventHandler,
+	
 	init: function () { },
 	render: function () { },
 	exit: function () { }
@@ -15,6 +16,7 @@ ScreenDefinitions.MainGame = {
 
 ScreenDefinitions.GameOver = {
 	eventHandlerClass: GameOverEventHandler,
+	
 	init: function () { },
 	render: function () { },
 	exit: function () { }
@@ -22,6 +24,7 @@ ScreenDefinitions.GameOver = {
 
 ScreenDefinitions.ViewMessages = {
 	eventHandlerClass: ScrollingViewEventHandler,
+	
 	init: function () {
 
 		this.displayWidth = this.game.screenWidth - 6;
@@ -53,6 +56,7 @@ ScreenDefinitions.ViewMessages = {
 		}
 
 	},
+	
 	render: function () {
 
 		this.display.clear();
@@ -63,7 +67,118 @@ ScreenDefinitions.ViewMessages = {
 
 		this.game.messageLog.render(this.display, 1, 1, this.displayWidth - 2, this.displayHeight - 2, this.cursorPosition);
 	},
+	
 	exit: function () {
+		
+		this.displayElement.remove();
+	}
+};
+
+ScreenDefinitions.InventoryActivate = {
+	eventHandlerClass: InventoryActivateEventHandler,
+	
+	init: function () {
+
+		this.title = "Select an item to use";
+
+		this.inventory = this.game.map.player.inventory;
+
+		this.displayWidth = this.title.length + 4;
+		this.displayHeight = this.inventory.length + 2;
+		if (this.displayHeight < 3) {
+			this.displayHeight = 3;
+		}
+
+		const displayOptions = {
+			width: this.displayWidth,
+			height: this.displayHeight,
+			forceSquareRatio: true,
+			bg: "#111"
+		}
+
+		this.display = new ROT.Display(displayOptions);
+		this.displayElement = document.body.appendChild(this.display.getContainer());
+		this.displayElement.style = "position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; margin:auto;";
+	},
+
+	render: function () {
+
+		this.display.clear();
+
+		drawFrame(this.display, 0, 0, this.displayWidth, this.displayHeight);
+
+		drawCenteredText(this.display, 0, 0, this.displayWidth, this.title);
+
+		if (this.inventory.length > 0) {
+			for (let i = 0; i < this.inventory.length; i++) {
+				const itemKey = String.fromCharCode("a".charCodeAt() + i);
+				const item = this.inventory[i];
+				const itemString = "(" + itemKey + ") " + item.name;
+				this.display.drawText(1, i + 1, itemString);
+			}
+		} else {
+			this.display.drawText(1, 1, "(Empty)");
+		}
+	},
+	exit: function () {
+
+		this.displayElement.remove();
+	}
+};
+
+// TODO: this is nearly identical to InventoryActivate
+
+// TODO: some of the new display logic is very similar between these and ViewMessages
+
+ScreenDefinitions.InventoryDrop = {
+	eventHandlerClass: InventoryDropEventHandler,
+	
+	init: function () {
+
+		this.title = "Select an item to drop";
+
+		this.inventory = this.game.map.player.inventory;
+
+		this.displayWidth = this.title.length + 4;
+		this.displayHeight = this.inventory.length + 2;
+		if (this.displayHeight < 3) {
+			this.displayHeight = 3;
+		}
+
+		const displayOptions = {
+			width: this.displayWidth,
+			height: this.displayHeight,
+			forceSquareRatio: true,
+			bg: "#111"
+		}
+
+		this.display = new ROT.Display(displayOptions);
+		this.displayElement = document.body.appendChild(this.display.getContainer());
+		this.displayElement.style = "position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; margin:auto;";
+	},
+
+	render: function () {
+
+		this.display.clear();
+
+		drawFrame(this.display, 0, 0, this.displayWidth, this.displayHeight);
+
+		drawCenteredText(this.display, 0, 0, this.displayWidth, this.title);
+
+		if (this.inventory.length > 0) {
+			for (let i = 0; i < this.inventory.length; i++) {
+				const itemKey = String.fromCharCode("a".charCodeAt() + i);
+				const item = this.inventory[i];
+				const itemString = "(" + itemKey + ") " + item.name;
+				this.display.drawText(1, i + 1, itemString);
+			}
+		} else {
+			this.display.drawText(1, 1, "(Empty)");
+		}
+	},
+
+	exit: function () {
+
 		this.displayElement.remove();
 	}
 };
