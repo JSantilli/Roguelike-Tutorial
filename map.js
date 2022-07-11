@@ -128,7 +128,6 @@ export class Map {
 	addEntity(entity) {
 
 		const key = entity.x + "," + entity.y;
-
 		if (this.entities[key]) {
 			this.entities[key].add(entity);
 		} else {
@@ -136,12 +135,28 @@ export class Map {
 		}
 	}
 
+	removeEntity(entity, previousX = null, previousY = null) {
+
+		let x = entity.x;
+		let y = entity.y;
+		if (previousX !== null && previousY !== null) {
+			x = previousX;
+			y = previousY;
+		}
+
+		const key = x + "," + y;
+		const entitiesAtKey = this.entities[key];
+		if (entitiesAtKey) {
+			entitiesAtKey.delete(entity);
+			if (entitiesAtKey.size === 0) {
+				delete this.entities[key];
+			}
+		}
+	}
+
 	updateEntityPosition(entity, previousX, previousY) {
 
-		const previousPositionEntities = this.entities[previousX + "," + previousY];
-		if (previousPositionEntities) {
-			previousPositionEntities.delete(entity);
-		}
+		this.removeEntity(entity, previousX, previousY);
 
 		if (this.isTileInBounds(entity.x, entity.y)) {
 			this.addEntity(entity);
@@ -170,9 +185,9 @@ export class Map {
 
 		const entities = this.getEntitiesAt(x, y);
 		if (entities) {
-			const items = entities.filter(entity => entity.hasMixin("Item"));
+			const items = entities.filter(entity => entity.hasGroup("Item"));
 			if (items.length > 0) {
-				return blockingEntities;
+				return items;
 			}
 		}
 

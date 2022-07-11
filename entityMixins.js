@@ -190,14 +190,14 @@ EntityMixins.InventoryHolder = {
 	} = {}) {
 
 		this.inventoryCapacity = capacity;
-		this.items = [];
+		this.inventory = [];
 	},
 
 	drop(item) {
 		
-		const index = this.items.indexOf(item);
+		const index = this.inventory.indexOf(item);
 		if (index > -1) {
-			this.items.splice(index, 1);
+			this.inventory.splice(index, 1);
 		}
 
 		item.setposition(this.x, this.y, this.map);

@@ -170,3 +170,29 @@ export class ItemAction extends Action {
 		this.item.activate(target);
 	}
 }
+
+export class PickupAction extends Action {
+
+	perform() {
+
+		const inventory = this.entity.inventory;
+
+		const items = this.map.getItemsAt(this.entity.x, this.entity.y);
+		if (items) {
+			for (const item of items) {
+				if (inventory.length >= this.entity.inventoryCapacity) {
+					throw new ImpossibleError("Your inventory is full.");
+				}
+
+				this.map.removeEntity(item);
+				// TODO: item still has a reference to map and an x + y. These should be removed.
+				inventory.push(item);
+
+				const pickupMessage = "You picked up the " + item.name + "!";
+				this.map.game.messageLog.addMessage(pickupMessage);
+			}
+		} else {
+			throw new ImpossibleError("There is nothing here to pick up.");
+		}
+	}
+}

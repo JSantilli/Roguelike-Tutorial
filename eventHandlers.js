@@ -1,6 +1,6 @@
 'use strict';
 
-import { BumpAction, ScrollAction, ChangeViewAction, WaitAction } from "./action.js";
+import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { clearLine } from "./renderFunctions.js";
@@ -15,6 +15,8 @@ class EventHandler {
 	}
 
 	handleKeydown(keyCode) {};
+
+	handleMousemove() {};
 }
 
 export class MainGameEventHandler extends EventHandler {
@@ -42,12 +44,11 @@ export class MainGameEventHandler extends EventHandler {
 		this.directionKeys[ROT.KEYS.VK_J] = 6;
 		this.directionKeys[ROT.KEYS.VK_U] = 7;
 
-		this.waitKeys = {};
-		this.waitKeys[ROT.KEYS.VK_K] = true;
-		// TODO: This structure seems a little funky. This 'true' is totally unnecessary for the logic, but has to be here syntactically.
+		this.waitKey = ROT.KEYS.VK_K;
 
-		this.viewKeys = {};
-		this.viewKeys[ROT.KEYS.VK_V] = true;
+		this.viewKey = ROT.KEYS.VK_V;
+
+		this.pickupKey = ROT.KEYS.VK_G;
 	}
 
 	handleKeydown(keyCode) {
@@ -58,18 +59,24 @@ export class MainGameEventHandler extends EventHandler {
 				new BumpAction(this.game.map.player, dx, dy).perform();
 			}
 			
-			else if (keyCode in this.waitKeys) {
+			else if (keyCode === this.waitKey) {
 				new WaitAction(this.game.map.player).perform();
 			}
 	
-			else if (keyCode in this.viewKeys) {
+			else if (keyCode === this.viewKey) {
 				new ChangeViewAction(this.game.map.player, ScreenDefinitions.ViewMessages).perform();
+			}
+
+			else if (keyCode === this.pickupKey) {
+				new PickupAction(this.game.map.player).perform();
 			}
 		} catch (e) {
 			if (e instanceof ImpossibleError) {
 				this.game.messageLog.addMessage(e.message, Colors.Impossible);
 				this.game.refresh();
 				return;
+			} else {
+				throw e;
 			}
 		}
 		
