@@ -21,6 +21,7 @@ export class Map {
 	tiles;
 
 	explored;
+	visible;
 
 	digger;
 
@@ -115,6 +116,22 @@ export class Map {
 		return (x >= 0 && x < this.width && y >= 0 && y < this.height);
 	}
 
+	getAllEntities() {
+
+		const entities = [];
+		for (const [, entitySet] of Object.entries(this.entities)) {
+			if (entitySet && entitySet.size > 0) {
+				entities.push(...Array.from(entitySet));
+			}
+		}
+
+		if (entities.length > 0) {
+			return entities;
+		} else {
+			return null;
+		}
+	}
+
 	getEntitiesAt(x, y) {
 
 		const entities = this.entities[x + "," + y];
@@ -193,6 +210,19 @@ export class Map {
 
 		return null;
 	}
+
+	// getActorsAt(x, y) {
+
+	// 	const entities = this.getEntitiesAt(x, y);
+	// 	if (entities) {
+	// 		const actors = entities.filter(entity => entity.hasGroup("Actor"));
+	// 		if (actors.length > 0) {
+	// 			return actors;
+	// 		}
+	// 	}
+
+	// 	return null;
+	// }
 
 	render(display) {
 

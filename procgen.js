@@ -9,7 +9,7 @@ import { Tile } from "./tile.js";
 // bad namespacing, bad for understanding why you would use that function
 
 export function generateDungeon(mapWidth, mapHeight) {
-	
+
 	const diggerOptions = {
 		roomWidth: [6, 10],
 		roomHeight: [6, 10],
@@ -33,6 +33,11 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 	const monsters = { // TODO: I probably want to create this weighted list from the entity factory list
 		"orc": 80,
 		"troll": 20
+	};
+
+	const items = {
+		"Health Potion": 70,
+		"Lightning Scroll": 30
 	};
 
 	for (let i = 0; i < map.digger.getRooms().length; i++) {
@@ -63,14 +68,15 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 			const numberOfItems = getRandomInt(0, maxItemsPerRoom);
 
 			for (let k = 0; k < numberOfItems; k++) {
-				
+
 				let x, y;
 				do {
 					x = getRandomInt(room.getLeft() + 1, room.getRight() - 1);
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
 				} while (!map.isEmptyTile(x, y));
 
-				entityFactory.create("Health Potion", map, x, y);
+				const itemString = ROT.RNG.getWeightedValue(items);
+				entityFactory.create(itemString, map, x, y);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ export const EntityMixins = {};
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
 	group: "Actor",
-	
+
 	act() {
 
 		this.map.game.refresh();
@@ -34,7 +34,7 @@ EntityMixins.PlayerActor = {
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	group: "Actor",
-	
+
 	act() {
 
 		// Entity should either not be destructible or it must be alive to act.
@@ -100,7 +100,7 @@ EntityMixins.HostileEnemy = {
 
 EntityMixins.Destructible = {
 	name: "Destructible",
-	
+
 	init({
 		maxHitPoints = 10,
 		hitPoints,
@@ -173,7 +173,7 @@ EntityMixins.Destructible = {
 
 EntityMixins.Attacker = {
 	name: "Attacker",
-	
+
 	init({
 		power
 	} = {}) {
@@ -184,7 +184,7 @@ EntityMixins.Attacker = {
 
 EntityMixins.InventoryHolder = {
 	name: "InventoryHolder",
-	
+
 	init({
 		capacity
 	} = {}) {
@@ -202,7 +202,7 @@ EntityMixins.InventoryHolder = {
 	},
 
 	dropItem(item) {
-		
+
 		this.removeItem(item);
 
 		item.setPosition(this.x, this.y, this.map);
@@ -215,7 +215,7 @@ EntityMixins.InventoryHolder = {
 
 EntityMixins.Consumable = {
 	name: "Consumable",
-	
+
 	consume(consumer) {
 
 		consumer.removeItem(this);
@@ -225,7 +225,7 @@ EntityMixins.Consumable = {
 EntityMixins.HealingItem = {
 	name: "HealingItem",
 	group: "Item",
-	
+
 	init({
 		healingAmount
 	} = {}) {
@@ -233,12 +233,10 @@ EntityMixins.HealingItem = {
 		this.healingAmount = healingAmount;
 	},
 
-	activateItem(target) {
+	activateItem(user) {
 
-		const consumer = target;
-		
-		if (consumer.hasMixin("Destructible")) {
-			const hitPointsRecovered = consumer.heal(this.healingAmount);
+		if (user.hasMixin("Destructible")) {
+			const hitPointsRecovered = user.heal(this.healingAmount);
 
 			if (hitPointsRecovered > 0) {
 				const healingMessage = "You consume the " + this.name + ", and recover " + hitPointsRecovered + " HP!";
@@ -248,8 +246,57 @@ EntityMixins.HealingItem = {
 			}
 		}
 
-		if (this.hasMixin("Consumable") && consumer.hasMixin("InventoryHolder")) {
-			this.consume(consumer);
+		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			this.consume(user);
+		}
+		this.map.game.refresh();
+	}
+}
+
+EntityMixins.LightningDamageItem = {
+	name: "LightningDamageItem",
+	group: "Item",
+
+	init({
+		damage,
+		maximumRange
+	} = {}) {
+
+		this.damage = damage;
+		this.maximumRange = maximumRange;
+	},
+
+	activateItem(user) {
+
+		let target = null;
+		let closestDistance = this.maximumRange + 1;
+
+		const allMapEntities = user.map.getAllEntities();
+		allMapEntities.forEach(entity => {
+			if (entity !== user && user.map.isTileVisible(entity.x, entity.y)) {
+				if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+					const distance = user.getDistanceFrom(entity.x, entity.y);
+
+					if (distance < closestDistance) {
+						target = entity;
+						closestDistance = distance;
+					}
+				}
+			}
+		});
+
+		if (target) {
+
+			target.takeDamage(this.damage);
+
+			const lightningMessage = "A lightning bolt strikes the " + target.name + " with a loud thunder, for " + this.damage + " damage!";
+			this.map.game.messageLog.addMessage(lightningMessage, Colors.HealthRecovered);
+		} else {
+			throw new ImpossibleError("No enemy is close enough to strike.");
+		}
+
+		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			this.consume(user);
 		}
 		this.map.game.refresh();
 	}

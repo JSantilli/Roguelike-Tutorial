@@ -76,6 +76,20 @@ const entityTemplates = [
 		]
 	},
 
+	{
+		name: "Lightning Scroll",
+		character: "~",
+		foreground: Colors.LightningScroll,
+		background: Colors.LightningScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.LightningDamageItem,
+			{ damage: 20, maximumRange: 5 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
 ];
 
 /* 

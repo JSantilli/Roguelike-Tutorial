@@ -81,10 +81,17 @@ export class Entity {
 	}
 
 	hasMixin(name) {
+
 		return this.mixins[name];
 	}
 
 	hasGroup(name) {
+
 		return this.mixinGroups[name];
+	}
+
+	getDistanceFrom(x, y) {
+
+		return Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
 	}
 }

@@ -1,5 +1,6 @@
-// TODO: I kind of like this pattern for Screens
+'use strict';
 
+import { Colors } from "./colors.js";
 import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
 import { drawCenteredText, drawFrame } from "./renderFunctions.js";
 
@@ -8,7 +9,7 @@ export const ScreenDefinitions = {};
 
 ScreenDefinitions.MainGame = {
 	eventHandlerClass: MainGameEventHandler,
-	
+
 	init: function () { },
 	render: function () { },
 	exit: function () { }
@@ -16,7 +17,7 @@ ScreenDefinitions.MainGame = {
 
 ScreenDefinitions.GameOver = {
 	eventHandlerClass: GameOverEventHandler,
-	
+
 	init: function () { },
 	render: function () { },
 	exit: function () { }
@@ -24,7 +25,7 @@ ScreenDefinitions.GameOver = {
 
 ScreenDefinitions.ViewMessages = {
 	eventHandlerClass: ScrollingViewEventHandler,
-	
+
 	init: function () {
 
 		this.displayWidth = this.game.screenWidth - 6;
@@ -34,7 +35,7 @@ ScreenDefinitions.ViewMessages = {
 			width: this.displayWidth,
 			height: this.displayHeight,
 			forceSquareRatio: true,
-			bg: "#111"
+			bg: Colors.SubMenu
 		}
 
 		this.display = new ROT.Display(displayOptions);
@@ -56,7 +57,7 @@ ScreenDefinitions.ViewMessages = {
 		}
 
 	},
-	
+
 	render: function () {
 
 		this.display.clear();
@@ -67,16 +68,16 @@ ScreenDefinitions.ViewMessages = {
 
 		this.game.messageLog.render(this.display, 1, 1, this.displayWidth - 2, this.displayHeight - 2, this.cursorPosition);
 	},
-	
+
 	exit: function () {
-		
+
 		this.displayElement.remove();
 	}
 };
 
 ScreenDefinitions.InventoryActivate = {
 	eventHandlerClass: InventoryActivateEventHandler,
-	
+
 	init: function () {
 
 		this.title = "Select an item to use";
@@ -93,7 +94,7 @@ ScreenDefinitions.InventoryActivate = {
 			width: this.displayWidth,
 			height: this.displayHeight,
 			forceSquareRatio: true,
-			bg: "#111"
+			bg: Colors.SubMenu
 		}
 
 		this.display = new ROT.Display(displayOptions);
@@ -132,7 +133,7 @@ ScreenDefinitions.InventoryActivate = {
 
 ScreenDefinitions.InventoryDrop = {
 	eventHandlerClass: InventoryDropEventHandler,
-	
+
 	init: function () {
 
 		this.title = "Select an item to drop";
@@ -149,7 +150,7 @@ ScreenDefinitions.InventoryDrop = {
 			width: this.displayWidth,
 			height: this.displayHeight,
 			forceSquareRatio: true,
-			bg: "#111"
+			bg: Colors.SubMenu
 		}
 
 		this.display = new ROT.Display(displayOptions);
