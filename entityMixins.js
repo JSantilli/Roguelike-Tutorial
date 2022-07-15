@@ -1,6 +1,6 @@
 'use strict';
 
-import { MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { BumpAction, MeleeAction, MoveAction, WaitAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
@@ -97,6 +97,49 @@ EntityMixins.HostileEnemy = {
 		return path;
 	}
 };
+
+EntityMixins.ConfusedEnemy = {
+	name: "ConfusedEnemy",
+	group: "Actor",
+
+	init({
+		previousActorMixin = EntityMixins.HostileEnemy,
+		turnsRemaining
+	} = {}) {
+
+		this.previousActorMixin = previousActorMixin;
+		this.turnsRemaining = turnsRemaining;
+	},
+
+	act() {
+
+		if (this.turnsRemaining >= 0) {
+			// TODO: go back to previous actor mixin
+
+			this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
+		} else {
+			const [dx, dy] = ROT.RNG.getItem([
+				[-1, -1],
+				[0, -1],
+				[1, -1],
+				[-1, 0],
+				[1, 0],
+				[-1, 1],
+				[0, 1],
+				[1, 1],
+			]);
+
+			try {
+				new BumpAction(this, dx, dy);
+			} catch (e) {
+				// AI errors get ignored for now.
+				console.log(e);
+			}
+
+			this.turnsRemaining -= 1;
+		}
+	}
+}
 
 EntityMixins.Destructible = {
 	name: "Destructible",
