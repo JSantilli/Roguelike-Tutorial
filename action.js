@@ -48,6 +48,42 @@ export class ScrollAction extends Action {
 	}
 }
 
+export class AdjustCursorAction extends Action {
+
+	dx;
+	dy;
+
+	constructor(entity, dx, dy) {
+		super(entity);
+
+		this.dx = dx;
+		this.dy = dy;
+	}
+	
+	perform () {
+
+		this.map.game.screen.changeCursor(this.dx, this.dy);
+	}
+}
+
+export class SetCursorAction extends Action {
+
+	x;
+	y;
+
+	constructor(entity, x, y) {
+		super(entity);
+
+		this.x = x;
+		this.y = y;
+	}
+	
+	perform () {
+
+		this.map.game.screen.setCursor(this.x, this.y);
+	}
+}
+
 export class WaitAction extends Action {
 
 	perform() {}

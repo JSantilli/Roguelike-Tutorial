@@ -16,6 +16,7 @@ export class Game {
 	screenWidth;
 	screenHeight;
 
+	// TODO: these should just belong to map, not game
 	mapWidth;
 	mapHeight;
 	

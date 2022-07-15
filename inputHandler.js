@@ -18,35 +18,19 @@ export class InputHandler {
 
 		switch (e.type) {
 			case "keydown":
-				this.eventKeydown(e);
+				this.game.screen.eventHandler.handleKeydown(e);
 				break;
 
 			case "mousemove":
-				this.eventMousemove(e);
+				this.game.screen.eventHandler.handleMousemove(e);
 				break;
 
 			case "click":
-				this.eventClick(e);
+				this.game.screen.eventHandler.handleClick(e);
 				break;
 
 			default:
 				break;
 		}
-	}
-
-	eventKeydown(e) {
-
-		const keyCode = e.keyCode;
-		this.game.screen.eventHandler.handleKeydown(keyCode);
-	}
-
-	eventMousemove(e) {
-
-		this.game.screen.eventHandler.handleMousemove(e);
-	}
-
-	eventClick(e) {
-
-		this.game.screen.eventHandler.handleClick(e);
 	}
 }

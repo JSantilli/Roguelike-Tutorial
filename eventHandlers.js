@@ -1,6 +1,6 @@
 'use strict';
 
-import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction } from "./action.js";
+import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction, AdjustCursorAction, SetCursorAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { clearLine } from "./renderFunctions.js";
@@ -10,11 +10,36 @@ class EventHandler {
 
 	game;
 
+	moveKeys;
+
+	confirmKeys;
+
 	constructor(game) {
+
 		this.game = game;
+
+		// TODO: it might be cool to abstract the keybind definitions away from the specific event handler.
+		this.moveKeys = {};
+		this.moveKeys[ROT.KEYS.VK_UP] = 0;
+		this.moveKeys[ROT.KEYS.VK_RIGHT] = 2;
+		this.moveKeys[ROT.KEYS.VK_DOWN] = 4;
+		this.moveKeys[ROT.KEYS.VK_LEFT] = 6;
+
+		// this.directionKeys[ROT.KEYS.VK_I] = 0;
+		this.moveKeys[ROT.KEYS.VK_O] = 1;
+		this.moveKeys[ROT.KEYS.VK_L] = 2;
+		this.moveKeys[ROT.KEYS.VK_PERIOD] = 3;
+		this.moveKeys[ROT.KEYS.VK_COMMA] = 4;
+		this.moveKeys[ROT.KEYS.VK_M] = 5;
+		this.moveKeys[ROT.KEYS.VK_J] = 6;
+		this.moveKeys[ROT.KEYS.VK_U] = 7;
+
+		this.confirmKeys = []
+		this.confirmKeys.push(ROT.KEYS.VK_ENTER);
+		this.confirmKeys.push(ROT.KEYS.VK_RETURN);
 	}
 
-	handleKeydown(keyCode) {};
+	handleKeydown(e) {};
 
 	handleMousemove() {};
 
@@ -23,28 +48,15 @@ class EventHandler {
 
 export class MainGameEventHandler extends EventHandler {
 
-	directionKeys;
-	waitKeys;
-	viewKeys;
+	waitKey;
+	viewKey;
+	pickupKey;
+	inventoryKey;
+	dropKey;
+	lookKey;
 
 	constructor(game) {
 		super(game);
-
-		// TODO: it might be cool to abstract the keybind definitions away from the specific event handler.
-		this.directionKeys = {};
-		this.directionKeys[ROT.KEYS.VK_UP] = 0;
-		this.directionKeys[ROT.KEYS.VK_RIGHT] = 2;
-		this.directionKeys[ROT.KEYS.VK_DOWN] = 4;
-		this.directionKeys[ROT.KEYS.VK_LEFT] = 6;
-
-		// this.directionKeys[ROT.KEYS.VK_I] = 0;
-		this.directionKeys[ROT.KEYS.VK_O] = 1;
-		this.directionKeys[ROT.KEYS.VK_L] = 2;
-		this.directionKeys[ROT.KEYS.VK_PERIOD] = 3;
-		this.directionKeys[ROT.KEYS.VK_COMMA] = 4;
-		this.directionKeys[ROT.KEYS.VK_M] = 5;
-		this.directionKeys[ROT.KEYS.VK_J] = 6;
-		this.directionKeys[ROT.KEYS.VK_U] = 7;
 
 		this.waitKey = ROT.KEYS.VK_K;
 
@@ -55,16 +67,20 @@ export class MainGameEventHandler extends EventHandler {
 		this.inventoryKey = ROT.KEYS.VK_I;
 
 		this.dropKey = ROT.KEYS.VK_D;
+
+		this.lookKey = ROT.KEYS.VK_SLASH;
 	}
 
-	handleKeydown(keyCode) {
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
 
 		let shouldUnlock = false;
 		
 		try {
 
-			if (keyCode in this.directionKeys) {
-				const [dx, dy] = ROT.DIRS[8][this.directionKeys[keyCode]];
+			if (keyCode in this.moveKeys) {
+				const [dx, dy] = ROT.DIRS[8][this.moveKeys[keyCode]];
 				new BumpAction(this.game.map.player, dx, dy).perform();
 				shouldUnlock = true;
 			}
@@ -89,6 +105,10 @@ export class MainGameEventHandler extends EventHandler {
 
 			else if (keyCode === this.dropKey) {
 				new ChangeViewAction(this.game.map.player, ScreenDefinitions.InventoryDrop).perform();
+			}
+
+			else if (keyCode === this.lookKey) {
+				new ChangeViewAction(this.game.map.player, ScreenDefinitions.Look).perform();
 			}
 
 		} catch (e) {
@@ -140,7 +160,9 @@ export class ScrollingViewEventHandler extends EventHandler {
 		this.scrollKeys[ROT.KEYS.VK_DOWN] = -1;
 	}
 
-	handleKeydown(keyCode) {
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
 
 		if (keyCode in this.scrollKeys) {
 			new ScrollAction(this.game.map.player, this.scrollKeys[keyCode]).perform();
@@ -161,11 +183,14 @@ export class AskUserEventHandler extends EventHandler {
 			ROT.KEYS.VK_ALT,
 			ROT.KEYS.VK_CONTROL,
 			ROT.KEYS.VK_META,
-			ROT.KEYS.VK_SHIFT
+			ROT.KEYS.VK_SHIFT,
+			ROT.KEYS.VK_WIN
 		];
 	}
 
-	handleKeydown(keyCode) {
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
 
 		if (this.ignoredKeys.includes(keyCode)) {
 			return;
@@ -182,21 +207,9 @@ export class AskUserEventHandler extends EventHandler {
 
 export class InventoryEventHandler extends AskUserEventHandler {
 
-	ignoredKeys;
+	handleKeydown(e) {
 
-	constructor(game) {
-		super(game);
-
-		this.ignoredKeys = [
-			ROT.KEYS.VK_ALT,
-			ROT.KEYS.VK_CONTROL,
-			ROT.KEYS.VK_META,
-			ROT.KEYS.VK_SHIFT,
-			ROT.KEYS.VK_WIN
-		];
-	}
-
-	handleKeydown(keyCode) {
+		const keyCode = e.keyCode;
 
 		const index = keyCode - ROT.KEYS.VK_A;
 
@@ -213,7 +226,7 @@ export class InventoryEventHandler extends AskUserEventHandler {
 			return;
 		}
 
-		super.handleKeydown(keyCode);
+		super.handleKeydown(e);
 	}
 
 	onItemSelected(item) {}
@@ -247,25 +260,64 @@ export class InventoryDropEventHandler extends InventoryEventHandler {
 	}
 }
 
-/* 
+export class SelectIndexEventHandler extends AskUserEventHandler {
 
-class InventoryActivateHandler(InventoryEventHandler):
-    """Handle using an inventory item."""
+	handleKeydown(e) {
 
-    TITLE = "Select an item to use"
+		const keyCode = e.keyCode;
 
-    def on_item_selected(self, item: Item) -> Optional[Action]:
-        """Return the action for the selected item."""
-        return item.consumable.get_action(self.engine.player)
+		if (keyCode in this.moveKeys) {
+			let modifier = 1;
+			if (e.shiftKey) {
+				modifier *= 5;
+			}
+			if (e.ctrlKey) {
+				modifier *= 10;
+			}
+			if (e.altKey) {
+				modifier *= 20;
+			}
 
+			let [dx, dy] = ROT.DIRS[8][this.moveKeys[keyCode]];
 
-class InventoryDropHandler(InventoryEventHandler):
-    """Handle dropping an inventory item."""
+			dx *= modifier;
+			dy *= modifier;
 
-    TITLE = "Select an item to drop"
+			new AdjustCursorAction(this.game.map.player, dx, dy).perform();
 
-    def on_item_selected(self, item: Item) -> Optional[Action]:
-        """Drop this item."""
-        return actions.DropItem(self.engine.player, item)
+			return;
+		}
 
- */
+		else if (this.confirmKeys.includes(keyCode)) {
+			return this.onIndexSelected();
+		}
+
+		super.handleKeydown(e);
+	}
+
+	handleMousemove(event) {
+		
+		const [x, y] = this.game.display.eventToPosition(event);
+
+		new SetCursorAction(this.game.map.player, x, y).perform();
+	}
+
+	handleClick(event) {
+
+		const [x, y] = this.game.display.eventToPosition(event);
+
+		new SetCursorAction(this.game.map.player, x, y).perform();
+
+		return this.onIndexSelected();
+	}
+
+	onIndexSelected() {}
+}
+
+export class LookEventHandler extends SelectIndexEventHandler {
+
+	onIndexSelected() {
+
+		new ChangeViewAction(this.game.map.player, ScreenDefinitions.MainGame).perform();
+	}
+}

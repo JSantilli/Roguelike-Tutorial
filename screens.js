@@ -1,7 +1,7 @@
 'use strict';
 
 import { Colors } from "./colors.js";
-import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
+import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LookEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
 import { drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
@@ -182,4 +182,40 @@ ScreenDefinitions.InventoryDrop = {
 
 		this.displayElement.remove();
 	}
+};
+
+ScreenDefinitions.Look = {
+	eventHandlerClass: LookEventHandler,
+
+	init: function () {
+
+		this.cursorX = this.game.map.player.x;
+		this.cursorY = this.game.map.player.y;
+
+		this.setCursor = function (x, y) {
+
+			const newCursorX = ROT.Util.clamp(x, 0, this.game.map.width - 1);
+			const newCursorY = ROT.Util.clamp(y, 0, this.game.map.height - 1);
+
+			if (newCursorX !== this.cursorX || newCursorY !== this.cursorY) {
+				this.cursorX = newCursorX;
+				this.cursorY = newCursorY;
+				this.render();
+			}
+		}
+
+		this.changeCursor = function (dx, dy) {
+
+			this.setCursor(this.cursorX + dx, this.cursorY + dy);
+		}
+	},
+
+	render: function () {
+
+		this.game.refresh();
+		// There isn't a great way in ROT.js to draw a cursor over an existing tile
+		this.game.display.drawOver(this.cursorX, this.cursorY, "X", Colors.White);
+	},
+
+	exit: function () { }
 };
