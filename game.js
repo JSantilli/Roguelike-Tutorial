@@ -37,6 +37,7 @@ export class Game {
 	entityFactory;
 
 	constructor() {
+
 		this.screenWidth = 80;
 		this.screenHeight = 50;
 
@@ -65,8 +66,6 @@ export class Game {
 
 	start() {
 
-		this.switchScreen(ScreenDefinitions.MainGame);
-
 		this.inputHandler = new InputHandler(this);
 
 		this.map = generateDungeon(this.mapWidth, this.mapHeight);
@@ -85,10 +84,13 @@ export class Game {
 			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Colors.WelcomeText, false);
 		}
 
+		this.switchScreen(ScreenDefinitions.MainGame);
+
 		this.engine.start();
 	}
 
 	refresh() {
+
 		this.display.clear();
 		this.map.render(this.display);
 		this.messageLog.render(this.display, 21, 45, 40, 5);
@@ -96,6 +98,7 @@ export class Game {
 	}
 
 	switchScreen(screenDefinition) {
+
 		if (this.screen) {
 			this.screen.exit();
 		}

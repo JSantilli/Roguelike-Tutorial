@@ -39,11 +39,11 @@ class EventHandler {
 		this.confirmKeys.push(ROT.KEYS.VK_RETURN);
 	}
 
-	handleKeydown(e) {};
+	handleKeydown(e) { };
 
-	handleMousemove() {};
+	handleMousemove() { };
 
-	handleClick() {};
+	handleClick() { };
 }
 
 export class MainGameEventHandler extends EventHandler {
@@ -76,7 +76,7 @@ export class MainGameEventHandler extends EventHandler {
 		const keyCode = e.keyCode;
 
 		let shouldUnlock = false;
-		
+
 		try {
 
 			if (keyCode in this.moveKeys) {
@@ -84,12 +84,12 @@ export class MainGameEventHandler extends EventHandler {
 				new BumpAction(this.game.map.player, dx, dy).perform();
 				shouldUnlock = true;
 			}
-			
+
 			else if (keyCode === this.waitKey) {
 				new WaitAction(this.game.map.player).perform();
 				shouldUnlock = true;
 			}
-	
+
 			else if (keyCode === this.viewKey) {
 				new ChangeViewAction(this.game.map.player, ScreenDefinitions.ViewMessages).perform();
 			}
@@ -120,14 +120,16 @@ export class MainGameEventHandler extends EventHandler {
 				throw e;
 			}
 		}
-		
+
 		if (shouldUnlock) {
 			this.game.engine.unlock();
 		}
 	}
 
 	handleMousemove(event) {
-		
+
+		// TODO: the screen should just handle this rendering
+
 		const [x, y] = this.game.display.eventToPosition(event);
 
 		clearLine(this.game.display, 21, 44);
@@ -135,8 +137,7 @@ export class MainGameEventHandler extends EventHandler {
 		if (this.game.map.isTileVisible(x, y)) {
 			const entities = this.game.map.getEntitiesAt(x, y);
 			if (entities) {
-				const entityArray = Array.from(entities);
-				const entityString = ROT.Util.capitalize(entityArray.map(entity => entity.name).join(", "));
+				const entityString = ROT.Util.capitalize(entities.map(entity => entity.name).join(", "));
 				this.game.display.drawText(21, 44, entityString);
 			}
 		}
@@ -200,7 +201,7 @@ export class AskUserEventHandler extends EventHandler {
 	}
 
 	handleClick(event) {
-		
+
 		new ChangeViewAction(this.game.map.player, ScreenDefinitions.MainGame).perform();
 	}
 }
@@ -229,7 +230,7 @@ export class InventoryEventHandler extends AskUserEventHandler {
 		super.handleKeydown(e);
 	}
 
-	onItemSelected(item) {}
+	onItemSelected(item) { }
 }
 
 export class InventoryActivateEventHandler extends InventoryEventHandler {
@@ -296,7 +297,7 @@ export class SelectIndexEventHandler extends AskUserEventHandler {
 	}
 
 	handleMousemove(event) {
-		
+
 		const [x, y] = this.game.display.eventToPosition(event);
 
 		new SetCursorAction(this.game.map.player, x, y).perform();
@@ -311,7 +312,7 @@ export class SelectIndexEventHandler extends AskUserEventHandler {
 		return this.onIndexSelected();
 	}
 
-	onIndexSelected() {}
+	onIndexSelected() { }
 }
 
 export class LookEventHandler extends SelectIndexEventHandler {

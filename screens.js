@@ -2,7 +2,7 @@
 
 import { Colors } from "./colors.js";
 import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LookEventHandler, MainGameEventHandler, ScrollingViewEventHandler } from "./eventHandlers.js";
-import { drawCenteredText, drawFrame } from "./renderFunctions.js";
+import { clearLine, drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
 export const ScreenDefinitions = {};
@@ -11,7 +11,12 @@ ScreenDefinitions.MainGame = {
 	eventHandlerClass: MainGameEventHandler,
 
 	init: function () { },
-	render: function () { },
+	
+	render: function () {
+
+		this.game.refresh();
+	},
+	
 	exit: function () { }
 };
 
@@ -213,8 +218,20 @@ ScreenDefinitions.Look = {
 	render: function () {
 
 		this.game.refresh();
-		// There isn't a great way in ROT.js to draw a cursor over an existing tile
+
+		// There isn't a great way in ROT.js to draw a cursor over an existing tile, so this just covers the glyph
+		// Maybe there's a good way to make a glyph flash between the entities on it's tile? (and this cursor)
 		this.game.display.drawOver(this.cursorX, this.cursorY, "X", Colors.White);
+
+		clearLine(this.game.display, 21, 44);
+
+		if (this.game.map.isTileVisible(this.cursorX, this.cursorY)) {
+			const entities = this.game.map.getEntitiesAt(this.cursorX, this.cursorY);
+			if (entities) {
+				const entityString = ROT.Util.capitalize(entities.map(entity => entity.name).join(", "));
+				this.game.display.drawText(21, 44, entityString);
+			}
+		}
 	},
 
 	exit: function () { }
