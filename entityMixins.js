@@ -113,30 +113,32 @@ EntityMixins.ConfusedEnemy = {
 
 	act() {
 
-		if (this.turnsRemaining >= 0) {
-			// TODO: go back to previous actor mixin
+		if (!this.hasMixin("Destructible") || this.isAlive) {
+			if (this.turnsRemaining >= 0) {
+				// TODO: go back to previous actor mixin
 
-			this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
-		} else {
-			const [dx, dy] = ROT.RNG.getItem([
-				[-1, -1],
-				[0, -1],
-				[1, -1],
-				[-1, 0],
-				[1, 0],
-				[-1, 1],
-				[0, 1],
-				[1, 1],
-			]);
+				this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
+			} else {
+				const [dx, dy] = ROT.RNG.getItem([
+					[-1, -1],
+					[0, -1],
+					[1, -1],
+					[-1, 0],
+					[1, 0],
+					[-1, 1],
+					[0, 1],
+					[1, 1],
+				]);
 
-			try {
-				new BumpAction(this, dx, dy);
-			} catch (e) {
-				// AI errors get ignored for now.
-				console.log(e);
+				try {
+					new BumpAction(this, dx, dy);
+				} catch (e) {
+					// AI errors get ignored for now.
+					console.log(e);
+				}
+
+				this.turnsRemaining -= 1;
 			}
-
-			this.turnsRemaining -= 1;
 		}
 	}
 }
