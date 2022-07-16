@@ -44,11 +44,13 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 		const room = map.digger.getRooms()[i];
 
 		if (i === 0) {
-			const [player_x, player_y] = room.getCenter();
+			const [playerX, playerY] = room.getCenter();
 
-			const player = entityFactory.create('player', map, player_x, player_y);
+			const player = entityFactory.create("player", map, playerX, playerY);
 			map.setPlayer(player);
 			scheduler.add(player, true);
+
+			scheduler.add(entityFactory.create("confused", map, playerX + 1, playerY + 1), true);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 

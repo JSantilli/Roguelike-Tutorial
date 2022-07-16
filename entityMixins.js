@@ -31,6 +31,31 @@ EntityMixins.PlayerActor = {
 	}
 };
 
+/* 
+
+EntityMixins.Actor = {
+
+	act() {
+		// High level decision tree that controls behavior
+		// calls into a specific 'normal acting function'
+		// calls into a confused acting function
+		// basically an AI actor mixin?
+	},
+
+	actNormal() {
+		//
+	},
+
+	actConfused() {
+		// Functions like this may also be reusable mixins rather than 'hardcoded' into this Actor mixin
+
+		// What if the player could also be confused? We would want to reuse this behavior
+		// 	without having to make the player use this AI actor class
+	}
+}
+
+*/
+
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	group: "Actor",
@@ -114,7 +139,7 @@ EntityMixins.ConfusedEnemy = {
 	act() {
 
 		if (!this.hasMixin("Destructible") || this.isAlive) {
-			if (this.turnsRemaining >= 0) {
+			if (this.turnsRemaining <= 0) {
 				// TODO: go back to previous actor mixin
 
 				this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
@@ -131,7 +156,7 @@ EntityMixins.ConfusedEnemy = {
 				]);
 
 				try {
-					new BumpAction(this, dx, dy);
+					new BumpAction(this, dx, dy).perform();
 				} catch (e) {
 					// AI errors get ignored for now.
 					console.log(e);
