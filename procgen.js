@@ -38,7 +38,8 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 
 	const items = {
 		"Health Potion": 70,
-		"Lightning Scroll": 30
+		"Confusion Scroll": 20,
+		"Lightning Scroll": 10
 	};
 
 	for (let i = 0; i < map.digger.getRooms().length; i++) {
@@ -50,6 +51,8 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 			const player = entityFactory.create("player", map, playerX, playerY);
 			map.setPlayer(player);
 			scheduler.add(player, true);
+
+			entityFactory.create("Confusion Scroll", map, playerX + 1, playerY);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 

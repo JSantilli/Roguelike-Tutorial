@@ -36,6 +36,9 @@ Colors.HealthPotionBG = Colors.TileFloorBG;
 Colors.LightningScroll = "#FFFF00";
 Colors.LightningScrollBG = Colors.TileFloorBG;
 
+Colors.ConfusionScroll = "#CF3FFF";
+Colors.ConfusionScrollBG = Colors.TileFloorBG;
+
 Colors.PlayerAttack = "#E0E0E0";
 Colors.EnemyAttack = "#FFC0C0";
 

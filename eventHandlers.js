@@ -41,9 +41,9 @@ class EventHandler {
 
 	handleKeydown(e) { };
 
-	handleMousemove() { };
+	handleMousemove(e) { };
 
-	handleClick() { };
+	handleClick(e) { };
 }
 
 export class MainGameEventHandler extends EventHandler {
@@ -126,11 +126,11 @@ export class MainGameEventHandler extends EventHandler {
 		}
 	}
 
-	handleMousemove(event) {
+	handleMousemove(e) {
 
 		// TODO: the screen should just handle this rendering
 
-		const [x, y] = this.game.display.eventToPosition(event);
+		const [x, y] = this.game.display.eventToPosition(e);
 
 		clearLine(this.game.display, 21, 44);
 
@@ -200,7 +200,7 @@ export class AskUserEventHandler extends EventHandler {
 		}
 	}
 
-	handleClick(event) {
+	handleClick(e) {
 
 		new ChangeViewAction(this.game.map.player, ScreenDefinitions.MainGame).perform();
 	}
@@ -239,7 +239,6 @@ export class InventoryActivateEventHandler extends InventoryEventHandler {
 
 		try {
 			new ItemAction(this.game.map.player, item).perform();
-			new ChangeViewAction(this.game.map.player, ScreenDefinitions.MainGame).perform();
 		} catch (e) {
 			if (e instanceof ImpossibleError) {
 				this.game.messageLog.addMessage(e.message, Colors.Impossible);
@@ -290,22 +289,30 @@ export class SelectIndexEventHandler extends AskUserEventHandler {
 		}
 
 		else if (this.confirmKeys.includes(keyCode)) {
-			return this.onIndexSelected();
+			try {
+				return this.onIndexSelected();
+			} catch (e) {
+				if (e instanceof ImpossibleError) {
+					this.game.messageLog.addMessage(e.message, Colors.Impossible);
+					this.game.screen.render();
+					return;
+				}
+			}
 		}
 
 		super.handleKeydown(e);
 	}
 
-	handleMousemove(event) {
+	handleMousemove(e) {
 
-		const [x, y] = this.game.display.eventToPosition(event);
+		const [x, y] = this.game.display.eventToPosition(e);
 
 		new SetCursorAction(this.game.map.player, x, y).perform();
 	}
 
-	handleClick(event) {
+	handleClick(e) {
 
-		const [x, y] = this.game.display.eventToPosition(event);
+		const [x, y] = this.game.display.eventToPosition(e);
 
 		new SetCursorAction(this.game.map.player, x, y).perform();
 
@@ -320,5 +327,13 @@ export class LookEventHandler extends SelectIndexEventHandler {
 	onIndexSelected() {
 
 		new ChangeViewAction(this.game.map.player, ScreenDefinitions.MainGame).perform();
+	}
+}
+
+export class SingleRangedAttackHandler extends SelectIndexEventHandler {
+
+	onIndexSelected() {
+
+		this.game.screen.callback(this.game.screen.item, this.game.screen.user, this.game.screen.cursorX, this.game.screen.cursorY);
 	}
 }

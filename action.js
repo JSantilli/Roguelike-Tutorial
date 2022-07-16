@@ -12,8 +12,8 @@ export class Action {
 		this.entity = entity;
 		this.map = this.entity.map;
 	}
-	
-	perform() {}
+
+	perform() { }
 }
 
 export class ChangeViewAction extends Action {
@@ -41,8 +41,8 @@ export class ScrollAction extends Action {
 
 		this.cursorAdjust = cursorAdjust;
 	}
-	
-	perform () {
+
+	perform() {
 
 		this.map.game.screen.scrollList(this.cursorAdjust);
 	}
@@ -59,8 +59,8 @@ export class AdjustCursorAction extends Action {
 		this.dx = dx;
 		this.dy = dy;
 	}
-	
-	perform () {
+
+	perform() {
 
 		this.map.game.screen.changeCursor(this.dx, this.dy);
 	}
@@ -77,8 +77,8 @@ export class SetCursorAction extends Action {
 		this.x = x;
 		this.y = y;
 	}
-	
-	perform () {
+
+	perform() {
 
 		this.map.game.screen.setCursor(this.x, this.y);
 	}
@@ -86,19 +86,19 @@ export class SetCursorAction extends Action {
 
 export class WaitAction extends Action {
 
-	perform() {}
+	perform() { }
 }
 
 export class ActionWithDirection extends Action {
-	
+
 	dx;
 	dy;
 	destinationX;
 	destinationY;
-	
+
 	constructor(entity, dx, dy) {
 		super(entity);
-		
+
 		this.dx = dx;
 		this.dy = dy;
 
@@ -106,7 +106,7 @@ export class ActionWithDirection extends Action {
 		this.destinationY = this.entity.y + this.dy;
 	}
 
-	perform() {}
+	perform() { }
 }
 
 export class BumpAction extends ActionWithDirection {
@@ -241,7 +241,25 @@ export class PickupAction extends Action {
 export class DropAction extends ItemAction {
 
 	perform() {
-		
+
 		this.entity.dropItem(this.item);
+	}
+}
+
+export class ApplyStatusEffectAction extends Action {
+
+	statusEffect;
+	numberOfTurns;
+
+	constructor(entity, statusEffect, numberOfTurns) {
+		super(entity);
+
+		this.statusEffect = statusEffect;
+		this.numberOfTurns = numberOfTurns;
+	}
+
+	perform() {
+
+		this.entity.statuses[this.statusEffect] = { turnsRemaining: this.numberOfTurns };
 	}
 }

@@ -90,6 +90,20 @@ const entityTemplates = [
 		]
 	},
 
+	{
+		name: "Confusion Scroll",
+		character: "~",
+		foreground: Colors.ConfusionScroll,
+		background: Colors.ConfusionScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.ConfusionItem,
+			{ numberOfTurns: 10 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
 ];
 
 /* 

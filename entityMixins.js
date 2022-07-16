@@ -1,6 +1,6 @@
 'use strict';
 
-import { BumpAction, MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { ApplyStatusEffectAction, BumpAction, ChangeViewAction, MeleeAction, MoveAction, WaitAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
@@ -290,6 +290,8 @@ EntityMixins.HealingItem = {
 		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
 			this.consume(user);
 		}
+
+		this.map.game.switchScreen(ScreenDefinitions.MainGame);
 		this.map.game.refresh();
 	}
 }
@@ -339,6 +341,65 @@ EntityMixins.LightningDamageItem = {
 		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
 			this.consume(user);
 		}
+
+		this.map.game.switchScreen(ScreenDefinitions.MainGame);
 		this.map.game.refresh();
+	}
+}
+
+EntityMixins.ConfusionItem = {
+	name: "ConfusionItem",
+	group: "Item",
+
+	init({
+		numberOfTurns
+	} = {}) {
+
+		this.numberOfTurns = numberOfTurns;
+	},
+
+	activateItem(user) {
+
+		this.map.game.switchScreen(ScreenDefinitions.SingleRangedAttack);
+
+		this.map.game.screen.setItemAndUser(this, user);
+		this.map.game.screen.setCallback(this.applyEffect);
+	},
+
+	applyEffect(item, user, x, y) {
+
+		if (!user.map.isTileVisible(x, y)) {
+			throw new ImpossibleError("You cannot target an area that you cannot see.");
+		}
+
+		let targets = [];
+		const entitiesAtLocation = user.map.getEntitiesAt(x, y);
+		if (entitiesAtLocation) {
+			entitiesAtLocation.forEach(entity => {
+				if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+					targets.push(entity);
+				}
+			});
+		}
+
+		if (targets.length === 0) {
+			throw new ImpossibleError("You must select an enemy to target.");
+		}
+
+		targets.forEach(target => {
+			if (target === user) {
+				throw new ImpossibleError("You cannot confuse yourself!");
+			}
+			new ApplyStatusEffectAction(target, "confused", item.numberOfTurns).perform();
+			user.map.game.messageLog.addMessage("The eyes of the " + target.name + " look vacant, as it starts to stumble around!", Colors.StatusEffectApplied);
+		});
+
+		if (item.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			item.consume(user);
+		}
+
+		new ChangeViewAction(user, ScreenDefinitions.MainGame).perform();
+
+		user.map.game.refresh();
 	}
 }
