@@ -1,4 +1,5 @@
 
+import { EntityMixins } from "./entityMixins.js";
 import { Map } from "./map.js";
 import { Tile } from "./tile.js";
 
@@ -9,7 +10,7 @@ import { Tile } from "./tile.js";
 // bad namespacing, bad for understanding why you would use that function
 
 export function generateDungeon(mapWidth, mapHeight) {
-	
+
 	const diggerOptions = {
 		roomWidth: [6, 10],
 		roomHeight: [6, 10],
@@ -35,15 +36,25 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 		"troll": 20
 	};
 
+	const items = {
+		"Health Potion": 70,
+		"Fireball Scroll": 10,
+		"Confusion Scroll": 10,
+		"Lightning Scroll": 10
+	};
+
 	for (let i = 0; i < map.digger.getRooms().length; i++) {
 		const room = map.digger.getRooms()[i];
 
 		if (i === 0) {
-			const [player_x, player_y] = room.getCenter();
+			const [playerX, playerY] = room.getCenter();
 
-			const player = entityFactory.create('player', map, player_x, player_y);
+			const player = entityFactory.create("player", map, playerX, playerY);
 			map.setPlayer(player);
 			scheduler.add(player, true);
+
+			entityFactory.create("Confusion Scroll", map, playerX + 1, playerY);
+			entityFactory.create("Fireball Scroll", map, playerX + 1, playerY + 1);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 
@@ -63,14 +74,15 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 			const numberOfItems = getRandomInt(0, maxItemsPerRoom);
 
 			for (let k = 0; k < numberOfItems; k++) {
-				
+
 				let x, y;
 				do {
 					x = getRandomInt(room.getLeft() + 1, room.getRight() - 1);
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
 				} while (!map.isEmptyTile(x, y));
 
-				entityFactory.create("Health Potion", map, x, y);
+				const itemString = ROT.RNG.getWeightedValue(items);
+				entityFactory.create(itemString, map, x, y);
 			}
 		}
 	}

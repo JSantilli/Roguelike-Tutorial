@@ -1,6 +1,6 @@
 'use strict';
 
-import { MeleeAction, MoveAction, WaitAction } from "./action.js";
+import { ApplyStatusEffectAction, BumpAction, ChangeViewAction, MeleeAction, MoveAction, WaitAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
@@ -12,7 +12,7 @@ export const EntityMixins = {};
 EntityMixins.PlayerActor = {
 	name: "PlayerActor",
 	group: "Actor",
-	
+
 	act() {
 
 		this.map.game.refresh();
@@ -34,11 +34,24 @@ EntityMixins.PlayerActor = {
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	group: "Actor",
-	
+
+	statuses: null,
+
+	init({ } = {}) {
+
+		this.statuses = {};
+	},
+
 	act() {
 
 		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
+
+			if ("confused" in this.statuses) {
+				this.actConfused();
+				return;
+			}
+
 			const target = this.map.player;
 			const dx = target.x - this.x;
 			const dy = target.y - this.y;
@@ -95,12 +108,40 @@ EntityMixins.HostileEnemy = {
 		});
 		path.shift(); // The first element in the path array is the source position. Discard it.
 		return path;
+	},
+
+	actConfused() {
+
+		if (this.statuses["confused"].turnsRemaining <= 0) {
+			delete this.statuses["confused"];
+			this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
+		} else {
+			const [dx, dy] = ROT.RNG.getItem([
+				[-1, -1],
+				[0, -1],
+				[1, -1],
+				[-1, 0],
+				[1, 0],
+				[-1, 1],
+				[0, 1],
+				[1, 1],
+			]);
+
+			try {
+				new BumpAction(this, dx, dy).perform();
+			} catch (e) {
+				// AI errors get ignored for now.
+				console.log(e);
+			}
+
+			this.statuses["confused"].turnsRemaining -= 1;
+		}
 	}
 };
 
 EntityMixins.Destructible = {
 	name: "Destructible",
-	
+
 	init({
 		maxHitPoints = 10,
 		hitPoints,
@@ -173,7 +214,7 @@ EntityMixins.Destructible = {
 
 EntityMixins.Attacker = {
 	name: "Attacker",
-	
+
 	init({
 		power
 	} = {}) {
@@ -184,7 +225,7 @@ EntityMixins.Attacker = {
 
 EntityMixins.InventoryHolder = {
 	name: "InventoryHolder",
-	
+
 	init({
 		capacity
 	} = {}) {
@@ -202,7 +243,7 @@ EntityMixins.InventoryHolder = {
 	},
 
 	dropItem(item) {
-		
+
 		this.removeItem(item);
 
 		item.setPosition(this.x, this.y, this.map);
@@ -215,7 +256,7 @@ EntityMixins.InventoryHolder = {
 
 EntityMixins.Consumable = {
 	name: "Consumable",
-	
+
 	consume(consumer) {
 
 		consumer.removeItem(this);
@@ -225,7 +266,7 @@ EntityMixins.Consumable = {
 EntityMixins.HealingItem = {
 	name: "HealingItem",
 	group: "Item",
-	
+
 	init({
 		healingAmount
 	} = {}) {
@@ -233,12 +274,10 @@ EntityMixins.HealingItem = {
 		this.healingAmount = healingAmount;
 	},
 
-	activateItem(target) {
+	activateItem(user) {
 
-		const consumer = target;
-		
-		if (consumer.hasMixin("Destructible")) {
-			const hitPointsRecovered = consumer.heal(this.healingAmount);
+		if (user.hasMixin("Destructible")) {
+			const hitPointsRecovered = user.heal(this.healingAmount);
 
 			if (hitPointsRecovered > 0) {
 				const healingMessage = "You consume the " + this.name + ", and recover " + hitPointsRecovered + " HP!";
@@ -248,9 +287,175 @@ EntityMixins.HealingItem = {
 			}
 		}
 
-		if (this.hasMixin("Consumable") && consumer.hasMixin("InventoryHolder")) {
-			this.consume(consumer);
+		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			this.consume(user);
 		}
+
+		this.map.game.switchScreen(ScreenDefinitions.MainGame);
 		this.map.game.refresh();
+	}
+}
+
+EntityMixins.LightningDamageItem = {
+	name: "LightningDamageItem",
+	group: "Item",
+
+	init({
+		damage,
+		maximumRange
+	} = {}) {
+
+		this.damage = damage;
+		this.maximumRange = maximumRange;
+	},
+
+	activateItem(user) {
+
+		let target = null;
+		let closestDistance = this.maximumRange + 1;
+
+		const allMapEntities = user.map.getAllEntities();
+		allMapEntities.forEach(entity => {
+			if (entity !== user && user.map.isTileVisible(entity.x, entity.y)) {
+				if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+					const distance = user.getDistanceFrom(entity.x, entity.y);
+
+					if (distance < closestDistance) {
+						target = entity;
+						closestDistance = distance;
+					}
+				}
+			}
+		});
+
+		if (target) {
+
+			target.takeDamage(this.damage);
+
+			const lightningMessage = "A lightning bolt strikes the " + target.name + " with a loud thunder, for " + this.damage + " damage!";
+			this.map.game.messageLog.addMessage(lightningMessage, Colors.HealthRecovered);
+		} else {
+			throw new ImpossibleError("No enemy is close enough to strike.");
+		}
+
+		if (this.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			this.consume(user);
+		}
+
+		this.map.game.switchScreen(ScreenDefinitions.MainGame);
+		this.map.game.refresh();
+	}
+}
+
+EntityMixins.ConfusionItem = {
+	name: "ConfusionItem",
+	group: "Item",
+
+	init({
+		numberOfTurns
+	} = {}) {
+
+		this.numberOfTurns = numberOfTurns;
+	},
+
+	activateItem(user) {
+
+		this.map.game.switchScreen(ScreenDefinitions.SingleRangedAttack, this, user);
+
+		this.map.game.screen.setCallback(this.applyEffect);
+	},
+
+	applyEffect(item, user, x, y) {
+
+		if (!user.map.isTileVisible(x, y)) {
+			throw new ImpossibleError("You cannot target an area that you cannot see.");
+		}
+
+		let targets = [];
+		const entitiesAtLocation = user.map.getEntitiesAt(x, y);
+		if (entitiesAtLocation) {
+			entitiesAtLocation.forEach(entity => {
+				if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+					targets.push(entity);
+				}
+			});
+		}
+
+		if (targets.length === 0) {
+			throw new ImpossibleError("You must select an enemy to target.");
+		}
+
+		targets.forEach(target => {
+			if (target === user) {
+				throw new ImpossibleError("You cannot confuse yourself!");
+			}
+			new ApplyStatusEffectAction(target, "confused", item.numberOfTurns).perform();
+			user.map.game.messageLog.addMessage("The eyes of the " + target.name + " look vacant, as it starts to stumble around!", Colors.StatusEffectApplied);
+		});
+
+		if (item.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			item.consume(user);
+		}
+
+		new ChangeViewAction(user, ScreenDefinitions.MainGame).perform();
+
+		user.map.game.refresh();
+	}
+}
+
+EntityMixins.BurnAreaItem = {
+	name: "BurnAreaItem",
+	group: "Item",
+
+	init({
+		damage,
+		radius
+	} = {}) {
+
+		this.damage = damage;
+		this.radius = radius;
+	},
+
+	activateItem(user) {
+
+		this.map.game.switchScreen(ScreenDefinitions.AreaRangedAttack, this, user);
+
+		this.map.game.screen.setCallback(this.applyEffect);
+	},
+
+	applyEffect(item, user, x, y) {
+
+		if (!user.map.isTileVisible(x, y)) {
+			throw new ImpossibleError("You cannot target an area that you cannot see.");
+		}
+
+		let targets = [];
+		const entitiesAtLocation = user.map.getAllEntities();
+
+		entitiesAtLocation.forEach(entity => {
+			if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+				if (entity.getDistanceFrom(x, y) <= item.radius) {
+					targets.push(entity);
+				}
+			}
+		});
+
+		if (targets.length === 0) {
+			throw new ImpossibleError("There are no targets in the radius.");
+		}
+
+		targets.forEach(target => {
+			target.takeDamage(item.damage);
+			const hitMessage = "The " + target.name + " is engulfed in a fiery explosion, taking " + item.damage + " damage!";
+			user.map.game.messageLog.addMessage(hitMessage);
+		});
+
+		if (item.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			item.consume(user);
+		}
+
+		new ChangeViewAction(user, ScreenDefinitions.MainGame).perform();
+
+		user.map.game.refresh();
 	}
 }

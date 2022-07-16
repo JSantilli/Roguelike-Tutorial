@@ -76,6 +76,48 @@ const entityTemplates = [
 		]
 	},
 
+	{
+		name: "Lightning Scroll",
+		character: "~",
+		foreground: Colors.LightningScroll,
+		background: Colors.LightningScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.LightningDamageItem,
+			{ damage: 20, maximumRange: 5 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
+	{
+		name: "Confusion Scroll",
+		character: "~",
+		foreground: Colors.ConfusionScroll,
+		background: Colors.ConfusionScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.ConfusionItem,
+			{ numberOfTurns: 10 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
+	{
+		name: "Fireball Scroll",
+		character: "~",
+		foreground: Colors.FireballScroll,
+		background: Colors.FireballScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.BurnAreaItem,
+			{ damage: 12, radius: 3 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
 ];
 
 /* 

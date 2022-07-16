@@ -4,6 +4,9 @@ export const Colors = {};
 
 Colors.White = "#FFFFFF";
 Colors.Black = "#000000";
+Colors.Red = "#FF0000";
+
+Colors.SubMenu = "#111111";
 
 Colors.TileFloorFG = Colors.White;
 Colors.TileFloorBG = "#C8B432";
@@ -30,8 +33,20 @@ Colors.CorpseBG = Colors.TileFloorBG;
 Colors.HealthPotion = "#7F00FF";
 Colors.HealthPotionBG = Colors.TileFloorBG;
 
-Colors.PlayerAttack = "#007F00";
+Colors.LightningScroll = "#FFFF00";
+Colors.LightningScrollBG = Colors.TileFloorBG;
+
+Colors.ConfusionScroll = "#CF3FFF";
+Colors.ConfusionScrollBG = Colors.TileFloorBG;
+
+Colors.FireballScroll = "#FF0000";
+Colors.FireballScrollBG = Colors.TileFloorBG;
+
+Colors.PlayerAttack = "#E0E0E0";
 Colors.EnemyAttack = "#FFC0C0";
+
+Colors.NeedsTarget = "#3FFFFF";
+Colors.StatusEffectApplied = "#3FFF3F";
 
 Colors.PlayerDie = "#FF3030";
 Colors.EnemyDie = "#FFA030";

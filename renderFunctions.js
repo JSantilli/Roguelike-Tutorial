@@ -19,26 +19,52 @@ export function renderHealthBar(display, currentValue, maximumValue, totalWidth)
 }
 
 function drawBar(display, x, y, width, color) {
-	
+
 	const rowString = "%c{" + color + "}%b{" + color + "}" + ".".repeat(width);
 	display.drawText(x, y, rowString);
 }
 
-export function drawFrame(display, x, y, width, height) {
+export function drawFrame(display, x, y, width, height, color = Colors.White, empty = false) {
+
+	// const decoration = "┌─┐│ │└─┘";
 	
-	const decoration = "┌─┐│ │└─┘";
+	const decoration = "╭─╮│ │╰─╯";
 
-	const firstRow = decoration.charAt(0) + decoration.charAt(1).repeat(width - 2) + decoration.charAt(2);
-	const middleRow = decoration.charAt(3) + decoration.charAt(4).repeat(width - 2) + decoration.charAt(5);
-	const lastRow = decoration.charAt(6) + decoration.charAt(7).repeat(width - 2) + decoration.charAt(8);
+	if (empty) {
+		display.drawOver(x, y, decoration.charAt(0), color);
 
-	display.drawText(x, y, firstRow);
+		for (let i = 1; i < width - 1; i++) {
+			display.drawOver(x + i, y, decoration.charAt(1), color);
+		}
 
-	for (let i = 1; i < height - 1; i++) {
-		display.drawText(x, y + i, middleRow);
+		display.drawOver(x + width - 1, y, decoration.charAt(2), color);
+	} else {
+		const firstRow = "%c{" + color + "}" + decoration.charAt(0) + decoration.charAt(1).repeat(width - 2) + decoration.charAt(2);
+		display.drawText(x, y, firstRow);
 	}
 
-	display.drawText(x, y + height - 1, lastRow);
+	for (let i = 1; i < height - 1; i++) {
+		if (empty) {
+			display.drawOver(x, y + i, decoration.charAt(3), color);
+			display.drawOver(x + width - 1, y + i, decoration.charAt(3), color);
+		} else {
+			const middleRow = "%c{" + color + "}" + decoration.charAt(3) + decoration.charAt(4).repeat(width - 2) + decoration.charAt(5);
+			display.drawText(x, y + i, middleRow);
+		}
+	}
+
+	if (empty) {
+		display.drawOver(x, y + height - 1, decoration.charAt(6), color);
+
+		for (let i = 1; i < width - 1; i++) {
+			display.drawOver(x + i, y + height - 1, decoration.charAt(1), color);
+		}
+
+		display.drawOver(x + width - 1, y + height - 1, decoration.charAt(8), color);
+	} else {
+		const lastRow = "%c{" + color + "}" + decoration.charAt(6) + decoration.charAt(7).repeat(width - 2) + decoration.charAt(8);
+		display.drawText(x, y + height - 1, lastRow);
+	}
 }
 
 export function drawCenteredText(display, x, y, width, text) {
@@ -48,6 +74,6 @@ export function drawCenteredText(display, x, y, width, text) {
 }
 
 export function clearLine(display, x, y, width = display.getOptions().width - x) {
-	
+
 	display.drawText(x, y, " ".repeat(width));
 }
