@@ -63,25 +63,6 @@ const entityTemplates = [
 	},
 
 	{
-		name: "confused",
-		character: "C",
-		foreground: Colors.Troll,
-		background: Colors.TrollBG,
-		renderOrder: RenderOrder.Alive,
-		blocksMovement: true,
-		mixins: [
-			[EntityMixins.ConfusedEnemy,
-			{ turnsRemaining: 4 }],
-			[EntityMixins.Destructible,
-			{ maxHitPoints: 16, defense: 1 }],
-			[EntityMixins.Attacker,
-			{ power: 4 }],
-			[EntityMixins.InventoryHolder,
-			{ capacity: 0 }],
-		]
-	},
-
-	{
 		name: "Health Potion",
 		character: "!",
 		foreground: Colors.HealthPotion,

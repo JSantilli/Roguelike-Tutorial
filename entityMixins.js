@@ -31,39 +31,27 @@ EntityMixins.PlayerActor = {
 	}
 };
 
-/* 
-
-EntityMixins.Actor = {
-
-	act() {
-		// High level decision tree that controls behavior
-		// calls into a specific 'normal acting function'
-		// calls into a confused acting function
-		// basically an AI actor mixin?
-	},
-
-	actNormal() {
-		//
-	},
-
-	actConfused() {
-		// Functions like this may also be reusable mixins rather than 'hardcoded' into this Actor mixin
-
-		// What if the player could also be confused? We would want to reuse this behavior
-		// 	without having to make the player use this AI actor class
-	}
-}
-
-*/
-
 EntityMixins.HostileEnemy = {
 	name: "HostileEnemy",
 	group: "Actor",
+
+	statuses: null,
+
+	init({ } = {}) {
+
+		this.statuses = {};
+	},
 
 	act() {
 
 		// Entity should either not be destructible or it must be alive to act.
 		if (!this.hasMixin("Destructible") || this.isAlive) {
+
+			if ("confused" in this.statuses) {
+				this.actConfused();
+				return;
+			}
+
 			const target = this.map.player;
 			const dx = target.x - this.x;
 			const dy = target.y - this.y;
@@ -120,53 +108,36 @@ EntityMixins.HostileEnemy = {
 		});
 		path.shift(); // The first element in the path array is the source position. Discard it.
 		return path;
-	}
-};
-
-EntityMixins.ConfusedEnemy = {
-	name: "ConfusedEnemy",
-	group: "Actor",
-
-	init({
-		previousActorMixin = EntityMixins.HostileEnemy,
-		turnsRemaining
-	} = {}) {
-
-		this.previousActorMixin = previousActorMixin;
-		this.turnsRemaining = turnsRemaining;
 	},
 
-	act() {
+	actConfused() {
 
-		if (!this.hasMixin("Destructible") || this.isAlive) {
-			if (this.turnsRemaining <= 0) {
-				// TODO: go back to previous actor mixin
+		if (this.statuses["confused"].turnsRemaining <= 0) {
+			delete this.statuses["confused"];
+			this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
+		} else {
+			const [dx, dy] = ROT.RNG.getItem([
+				[-1, -1],
+				[0, -1],
+				[1, -1],
+				[-1, 0],
+				[1, 0],
+				[-1, 1],
+				[0, 1],
+				[1, 1],
+			]);
 
-				this.map.game.messageLog.addMessage("The " + this.name + " is no longer confused.");
-			} else {
-				const [dx, dy] = ROT.RNG.getItem([
-					[-1, -1],
-					[0, -1],
-					[1, -1],
-					[-1, 0],
-					[1, 0],
-					[-1, 1],
-					[0, 1],
-					[1, 1],
-				]);
-
-				try {
-					new BumpAction(this, dx, dy).perform();
-				} catch (e) {
-					// AI errors get ignored for now.
-					console.log(e);
-				}
-
-				this.turnsRemaining -= 1;
+			try {
+				new BumpAction(this, dx, dy).perform();
+			} catch (e) {
+				// AI errors get ignored for now.
+				console.log(e);
 			}
+
+			this.statuses["confused"].turnsRemaining -= 1;
 		}
 	}
-}
+};
 
 EntityMixins.Destructible = {
 	name: "Destructible",

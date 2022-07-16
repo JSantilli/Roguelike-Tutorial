@@ -1,4 +1,5 @@
 
+import { EntityMixins } from "./entityMixins.js";
 import { Map } from "./map.js";
 import { Tile } from "./tile.js";
 
@@ -49,8 +50,6 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 			const player = entityFactory.create("player", map, playerX, playerY);
 			map.setPlayer(player);
 			scheduler.add(player, true);
-
-			scheduler.add(entityFactory.create("confused", map, playerX + 1, playerY + 1), true);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 
