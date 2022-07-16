@@ -104,6 +104,20 @@ const entityTemplates = [
 		]
 	},
 
+	{
+		name: "Fireball Scroll",
+		character: "~",
+		foreground: Colors.FireballScroll,
+		background: Colors.FireballScrollBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.BurnAreaItem,
+			{ damage: 12, radius: 3 }],
+			[EntityMixins.Consumable]
+		]
+	},
+
 ];
 
 /* 

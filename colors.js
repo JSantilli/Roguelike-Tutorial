@@ -39,6 +39,9 @@ Colors.LightningScrollBG = Colors.TileFloorBG;
 Colors.ConfusionScroll = "#CF3FFF";
 Colors.ConfusionScrollBG = Colors.TileFloorBG;
 
+Colors.FireballScroll = "#FF0000";
+Colors.FireballScrollBG = Colors.TileFloorBG;
+
 Colors.PlayerAttack = "#E0E0E0";
 Colors.EnemyAttack = "#FFC0C0";
 

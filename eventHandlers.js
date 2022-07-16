@@ -316,7 +316,15 @@ export class SelectIndexEventHandler extends AskUserEventHandler {
 
 		new SetCursorAction(this.game.map.player, x, y).perform();
 
-		return this.onIndexSelected();
+		try {
+			return this.onIndexSelected();
+		} catch (e) {
+			if (e instanceof ImpossibleError) {
+				this.game.messageLog.addMessage(e.message, Colors.Impossible);
+				this.game.screen.render();
+				return;
+			}
+		}
 	}
 
 	onIndexSelected() { }

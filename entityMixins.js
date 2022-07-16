@@ -360,9 +360,8 @@ EntityMixins.ConfusionItem = {
 
 	activateItem(user) {
 
-		this.map.game.switchScreen(ScreenDefinitions.SingleRangedAttack);
+		this.map.game.switchScreen(ScreenDefinitions.SingleRangedAttack, this, user);
 
-		this.map.game.screen.setItemAndUser(this, user);
 		this.map.game.screen.setCallback(this.applyEffect);
 	},
 
@@ -392,6 +391,63 @@ EntityMixins.ConfusionItem = {
 			}
 			new ApplyStatusEffectAction(target, "confused", item.numberOfTurns).perform();
 			user.map.game.messageLog.addMessage("The eyes of the " + target.name + " look vacant, as it starts to stumble around!", Colors.StatusEffectApplied);
+		});
+
+		if (item.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {
+			item.consume(user);
+		}
+
+		new ChangeViewAction(user, ScreenDefinitions.MainGame).perform();
+
+		user.map.game.refresh();
+	}
+}
+
+EntityMixins.BurnAreaItem = {
+	name: "BurnAreaItem",
+	group: "Item",
+
+	init({
+		damage,
+		radius
+	} = {}) {
+
+		this.damage = damage;
+		this.radius = radius;
+	},
+
+	activateItem(user) {
+
+		this.map.game.switchScreen(ScreenDefinitions.AreaRangedAttack, this, user);
+
+		this.map.game.screen.setCallback(this.applyEffect);
+	},
+
+	applyEffect(item, user, x, y) {
+
+		if (!user.map.isTileVisible(x, y)) {
+			throw new ImpossibleError("You cannot target an area that you cannot see.");
+		}
+
+		let targets = [];
+		const entitiesAtLocation = user.map.getAllEntities();
+
+		entitiesAtLocation.forEach(entity => {
+			if (entity.hasGroup("Actor") && entity.hasMixin("Destructible")) {
+				if (entity.getDistanceFrom(x, y) <= item.radius) {
+					targets.push(entity);
+				}
+			}
+		});
+
+		if (targets.length === 0) {
+			throw new ImpossibleError("There are no targets in the radius.");
+		}
+
+		targets.forEach(target => {
+			target.takeDamage(item.damage);
+			const hitMessage = "The " + target.name + " is engulfed in a fiery explosion, taking " + item.damage + " damage!";
+			user.map.game.messageLog.addMessage(hitMessage);
 		});
 
 		if (item.hasMixin("Consumable") && user.hasMixin("InventoryHolder")) {

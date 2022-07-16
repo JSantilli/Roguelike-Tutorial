@@ -97,13 +97,18 @@ export class Game {
 		renderHealthBar(this.display, this.map.player.hitPoints, this.map.player.maxHitPoints, 20);
 	}
 
-	switchScreen(screenDefinition) {
+	switchScreen(screenDefinition, item = null, user = null) {
 
 		if (this.screen) {
 			this.screen.exit();
 		}
 		this.screen = new Screen(this, screenDefinition);
 		this.screen.init();
+		
+		if (item && user) {
+			this.screen.setItemAndUser(item, user);
+		}
+
 		this.screen.render();
 	}
 }

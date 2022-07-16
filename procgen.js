@@ -38,7 +38,8 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 
 	const items = {
 		"Health Potion": 70,
-		"Confusion Scroll": 20,
+		"Fireball Scroll": 10,
+		"Confusion Scroll": 10,
 		"Lightning Scroll": 10
 	};
 
@@ -53,6 +54,7 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 			scheduler.add(player, true);
 
 			entityFactory.create("Confusion Scroll", map, playerX + 1, playerY);
+			entityFactory.create("Fireball Scroll", map, playerX + 1, playerY + 1);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 
