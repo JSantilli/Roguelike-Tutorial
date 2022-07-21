@@ -58,15 +58,15 @@ export class Game {
 		// TODO: I need to set this in a css file, not in js
 		displayElement.style = "position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; margin:auto;";
 
-		this.messageLog = new MessageLog();
+		this.inputHandler = new InputHandler(this);
 
-		this.scheduler = new ROT.Scheduler.Simple();
-		this.engine = new ROT.Engine(this.scheduler);
+		this.switchScreen(ScreenDefinitions.MainMenu);
 	}
 
 	start() {
 
-		this.inputHandler = new InputHandler(this);
+		this.scheduler = new ROT.Scheduler.Simple();
+		this.engine = new ROT.Engine(this.scheduler);
 
 		this.map = generateDungeon(this.mapWidth, this.mapHeight);
 		this.map.setGame(this);
@@ -76,13 +76,8 @@ export class Game {
 
 		placeEntities(this.map, this.maxMonstersPerRoom, this.maxItemsPerRoom, this.entityFactory, this.scheduler);
 
-		for (let i = 0; i < 20; i++) {
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!1", Colors.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!2", Colors.WelcomeText, false);
-			this.messageLog.addMessage("Hello and %c{yellow}welcome, adventurer, to yet another %c{white}dungeon!3", Colors.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet %c{red}another %c{}dungeon!4", Colors.WelcomeText, false);
-			this.messageLog.addMessage("Hello and welcome, adventurer, to yet another %c{red}dungeon!5", Colors.WelcomeText, false);
-		}
+		this.messageLog = new MessageLog();
+		this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!", Colors.WelcomeText, false);
 
 		this.switchScreen(ScreenDefinitions.MainGame);
 

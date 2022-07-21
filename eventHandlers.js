@@ -46,6 +46,31 @@ class EventHandler {
 	handleClick(e) { };
 }
 
+export class MainMenuEventHandler extends EventHandler {
+
+	
+
+	constructor(game) {
+		super(game);
+
+		this.newGameKey = ROT.KEYS.VK_N;
+		this.continueGameKey = ROT.KEYS.VK_C;
+	}
+
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
+
+		if (keyCode === this.newGameKey) {
+			this.game.start();
+		}
+
+		else if (keyCode === this.continueGameKey) {
+			// load game here
+		}
+	}
+}
+
 export class MainGameEventHandler extends EventHandler {
 
 	waitKey;

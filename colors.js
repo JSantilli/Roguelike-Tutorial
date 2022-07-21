@@ -61,3 +61,6 @@ Colors.HealthRecovered = "#00FF00";
 Colors.BarText = Colors.White;
 Colors.BarFilled = "#006000";
 Colors.BarEmpty = "#401010";
+
+Colors.MenuTitle = "#FFFF3F";
+Colors.MenuText = Colors.White;

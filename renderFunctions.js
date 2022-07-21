@@ -67,10 +67,10 @@ export function drawFrame(display, x, y, width, height, color = Colors.White, em
 	}
 }
 
-export function drawCenteredText(display, x, y, width, text) {
+export function drawCenteredText(display, x, y, width, text, color = Colors.White) {
 
 	const textStart = Math.floor(x + (width / 2) - (text.length / 2));
-	display.drawText(textStart, y, text);
+	display.drawText(textStart, y, "%c{" + color + "}" + text);
 }
 
 export function clearLine(display, x, y, width = display.getOptions().width - x) {
