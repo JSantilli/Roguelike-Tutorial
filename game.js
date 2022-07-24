@@ -7,9 +7,10 @@ import { Factory } from "./factory.js";
 import { InputHandler } from "./inputHandler.js";
 import { MessageLog } from "./messageLog.js";
 import { generateDungeon, placeEntities } from "./procgen.js";
-import { renderHealthBar } from "./renderFunctions.js";
+import { drawPopup, renderHealthBar } from "./renderFunctions.js";
 import { Screen } from "./screen.js";
 import { ScreenDefinitions } from "./screens.js";
+import { Tile } from "./tile.js";
 
 export class Game {
 
@@ -105,5 +106,76 @@ export class Game {
 		}
 
 		this.screen.render();
+	}
+
+	saveGame() {
+
+		/*
+		To save a game we need to store:
+
+			* The map
+				* Width, height
+				* All of the tiles in the current map
+					* This should be some simple representation of a tile
+					* When we load this back, we don't want to create new tiles to rebuild the map,
+					* 	we just need to set each index of the tiles array to the proper Tile as defined in tile.js
+				* Explored tiles
+				* All entities on the map
+					* I think we need to store all info on the Entity object (except map),
+					*	because we don't want to track all of the weird member variables a mixin might add,
+					*	and we need to know the exact state of any of those variables to load them back into the proper state.
+					*	(E.g. an Entity with the "Destructible" mixin has a hitPoints variable, which must be tracked across saves)
+		*/
+
+		const savedTiles = [];
+
+		this.map.tiles.forEach(mapColumn => {
+			const savedColumn = [];
+			mapColumn.forEach(tile => {
+				if (tile === Tile.FloorTile) {
+					savedColumn.push(0);
+				}
+
+				else if (tile === Tile.WallTile) {
+					savedColumn.push(1);
+				}
+
+				else {
+					savedColumn.push(null);
+				}
+			});
+			savedTiles.push(savedColumn);
+		});
+
+		const savedEntities = {};
+
+		for (const [key, entitySet] of Object.entries(this.map.entities)) {
+			if (entitySet && entitySet.size > 0) {
+				savedEntities[key] = Array.from(entitySet)
+			}
+		}
+
+		const savedMap = {
+
+			width: this.map.width,
+			height: this.map.height,
+
+			tiles: savedTiles,
+			explored: this.map.explored,
+
+			entities: savedEntities
+		};
+
+		const ignoreMap = (key, value) => {
+			
+			if (key === "map") return undefined;
+			return value;
+		}
+
+		const saveString = JSON.stringify(savedMap, ignoreMap);
+
+		localStorage.setItem("savedMap", saveString);
+
+		drawPopup(this.display, "Game saved");
 	}
 }

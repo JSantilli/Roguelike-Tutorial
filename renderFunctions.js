@@ -24,13 +24,13 @@ function drawBar(display, x, y, width, color) {
 	display.drawText(x, y, rowString);
 }
 
-export function drawFrame(display, x, y, width, height, color = Colors.White, empty = false) {
+export function drawFrame(display, x, y, width, height, color = Colors.White, transparent = false) {
 
 	// const decoration = "┌─┐│ │└─┘";
 	
 	const decoration = "╭─╮│ │╰─╯";
 
-	if (empty) {
+	if (transparent) {
 		display.drawOver(x, y, decoration.charAt(0), color);
 
 		for (let i = 1; i < width - 1; i++) {
@@ -44,7 +44,7 @@ export function drawFrame(display, x, y, width, height, color = Colors.White, em
 	}
 
 	for (let i = 1; i < height - 1; i++) {
-		if (empty) {
+		if (transparent) {
 			display.drawOver(x, y + i, decoration.charAt(3), color);
 			display.drawOver(x + width - 1, y + i, decoration.charAt(3), color);
 		} else {
@@ -53,7 +53,7 @@ export function drawFrame(display, x, y, width, height, color = Colors.White, em
 		}
 	}
 
-	if (empty) {
+	if (transparent) {
 		display.drawOver(x, y + height - 1, decoration.charAt(6), color);
 
 		for (let i = 1; i < width - 1; i++) {
@@ -69,11 +69,24 @@ export function drawFrame(display, x, y, width, height, color = Colors.White, em
 
 export function drawCenteredText(display, x, y, width, text, color = Colors.White) {
 
-	const textStart = Math.floor(x + (width / 2) - (text.length / 2));
-	display.drawText(textStart, y, "%c{" + color + "}" + text);
+	const textStart = Math.floor(x + (width / 2) - Math.min(text.length / 2, width / 2));
+	display.drawText(textStart, y, "%c{" + color + "}" + text, width);
 }
 
 export function clearLine(display, x, y, width = display.getOptions().width - x) {
 
 	display.drawText(x, y, " ".repeat(width));
+}
+
+export function drawPopup(display, text) {
+
+	const width = 20;
+	const height = 11;
+
+	const x = Math.floor(display.getOptions().width / 2 - width / 2);
+	const y = Math.floor(display.getOptions().height / 2 - height / 2);
+
+	drawFrame(display, x, y, width, height);
+
+	drawCenteredText(display, x + 1, Math.floor(y + height / 2), width - 2, text);
 }
