@@ -32,7 +32,7 @@ export class Map {
 
 	fov;
 
-	constructor(width, height, digger) {
+	constructor(width, height, digger = null) {
 
 		this.width = width;
 		this.height = height;

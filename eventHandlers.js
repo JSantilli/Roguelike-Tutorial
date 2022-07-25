@@ -46,6 +46,29 @@ class EventHandler {
 	handleClick(e) { };
 }
 
+export class MainMenuEventHandler extends EventHandler {
+
+	constructor(game) {
+		super(game);
+
+		this.newGameKey = ROT.KEYS.VK_N;
+		this.continueGameKey = ROT.KEYS.VK_C;
+	}
+
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
+
+		if (keyCode === this.newGameKey) {
+			this.game.start();
+		}
+
+		else if (keyCode === this.continueGameKey) {
+			this.game.loadGame();
+		}
+	}
+}
+
 export class MainGameEventHandler extends EventHandler {
 
 	waitKey;
@@ -72,6 +95,11 @@ export class MainGameEventHandler extends EventHandler {
 	}
 
 	handleKeydown(e) {
+
+		// TODO: this removes the popup on any key press
+		// This should be extended to also remove the popup on ANY eventhandler and for clicks as well
+		// Eventually once all screens are rendered via the screen.render() (looking at you game!), just call screen.render on any input in the inputHandler.js
+		this.game.refresh();
 
 		const keyCode = e.keyCode;
 
@@ -109,6 +137,10 @@ export class MainGameEventHandler extends EventHandler {
 
 			else if (keyCode === this.lookKey) {
 				new ChangeViewAction(this.game.map.player, ScreenDefinitions.Look).perform();
+			}
+
+			else if (keyCode === ROT.KEYS.VK_S) {
+				this.game.saveGame();
 			}
 
 		} catch (e) {

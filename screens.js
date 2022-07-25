@@ -1,11 +1,31 @@
 'use strict';
 
 import { Colors } from "./colors.js";
-import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LookEventHandler, MainGameEventHandler, ScrollingViewEventHandler, SingleRangedAttackHandler } from "./eventHandlers.js";
+import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LookEventHandler, MainGameEventHandler, MainMenuEventHandler, ScrollingViewEventHandler, SingleRangedAttackHandler } from "./eventHandlers.js";
 import { clearLine, drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
 export const ScreenDefinitions = {};
+
+ScreenDefinitions.MainMenu = {
+	eventHandlerClass: MainMenuEventHandler,
+
+	init: function () { },
+	
+	render: function () {
+
+		drawCenteredText(this.game.display, 0, Math.floor(this.game.screenHeight / 2) - 4, this.game.screenWidth, "TOMBS OF THE ANCIENT KINGS", Colors.MenuTitle);
+		drawCenteredText(this.game.display, 0, this.game.screenHeight - 2, this.game.screenWidth, "by Jason Santilli", Colors.MenuTitle);
+		
+		const optionsX = Math.floor(this.game.screenWidth / 2) - 12;
+		const optionsY = Math.floor(this.game.screenHeight / 2) - 2;
+
+		this.game.display.drawText(optionsX, optionsY, "%c{" + Colors.MenuText + "}" + "[N] Play a new game");
+		this.game.display.drawText(optionsX, optionsY + 1, "%c{" + Colors.MenuText + "}" + "[C] Continue last game");
+	},
+	
+	exit: function () { }
+};
 
 ScreenDefinitions.MainGame = {
 	eventHandlerClass: MainGameEventHandler,
