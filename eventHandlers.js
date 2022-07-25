@@ -64,7 +64,7 @@ export class MainMenuEventHandler extends EventHandler {
 		}
 
 		else if (keyCode === this.continueGameKey) {
-			// load game here
+			this.game.loadGame();
 		}
 	}
 }

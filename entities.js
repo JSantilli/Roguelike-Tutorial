@@ -22,7 +22,7 @@ const entityTemplates = [
 			[EntityMixins.Attacker,
 			{ power: 5 }],
 			[EntityMixins.InventoryHolder,
-			{ capacity: 26 }],
+			{ inventoryCapacity: 26 }],
 		]
 	},
 
@@ -40,7 +40,7 @@ const entityTemplates = [
 			[EntityMixins.Attacker,
 			{ power: 3 }],
 			[EntityMixins.InventoryHolder,
-			{ capacity: 0 }],
+			{ inventoryCapacity: 0 }],
 		]
 	},
 
@@ -58,7 +58,7 @@ const entityTemplates = [
 			[EntityMixins.Attacker,
 			{ power: 4 }],
 			[EntityMixins.InventoryHolder,
-			{ capacity: 0 }],
+			{ inventoryCapacity: 0 }],
 		]
 	},
 

@@ -28,7 +28,7 @@ export class Entity {
 		background,
 		renderOrder,
 		blocksMovement = false,
-		mixins = {}
+		mixins = []
 	} = {}) {
 
 		this.name = name;
@@ -92,6 +92,10 @@ export class Entity {
 
 	getDistanceFrom(x, y) {
 
-		return Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+		// Below calculates the actual distance assuming diagonals take √2 movement vs 1
+		// 	but since diagonals cost no extra movement, we want to calculate distance as though diagonals are length 1
+		// return Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+		
+		return Math.max(Math.abs(x - this.x), Math.abs(y - this.y));
 	}
 }

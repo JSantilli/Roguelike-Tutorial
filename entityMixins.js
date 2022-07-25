@@ -37,9 +37,11 @@ EntityMixins.HostileEnemy = {
 
 	statuses: null,
 
-	init({ } = {}) {
+	init({
+		statuses = {}
+	} = {}) {
 
-		this.statuses = {};
+		this.statuses = statuses;
 	},
 
 	act() {
@@ -227,11 +229,12 @@ EntityMixins.InventoryHolder = {
 	name: "InventoryHolder",
 
 	init({
-		capacity
+		inventoryCapacity = 0,
+		inventory = []
 	} = {}) {
 
-		this.inventoryCapacity = capacity;
-		this.inventory = [];
+		this.inventoryCapacity = inventoryCapacity;
+		this.inventory = inventory;
 	},
 
 	removeItem(item) {
@@ -403,6 +406,8 @@ EntityMixins.ConfusionItem = {
 	}
 }
 
+// TODO: the variables added by mixins should be uniquely named so they don't overwrite each other
+// damage and radius are too generic
 EntityMixins.BurnAreaItem = {
 	name: "BurnAreaItem",
 	group: "Item",

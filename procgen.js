@@ -1,5 +1,4 @@
 
-import { EntityMixins } from "./entityMixins.js";
 import { Map } from "./map.js";
 import { Tile } from "./tile.js";
 
