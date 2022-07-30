@@ -2,6 +2,7 @@
 
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
+import { Tile } from "./tile.js";
 
 export class Action {
 
@@ -87,6 +88,19 @@ export class SetCursorAction extends Action {
 export class WaitAction extends Action {
 
 	perform() { }
+}
+
+export class TakeStairsAction extends Action {
+
+	perform() {
+
+		if (this.map.getTile(this.entity.x, this.entity.y) === Tile.DownStairsTile) {
+			this.map.game.world.generateFloor();
+			this.map.game.messageLog.addMessage("You descend the staircase.", Colors.Descend);
+		} else {
+			throw new ImpossibleError("There are no stairs here.");
+		}
+	}
 }
 
 export class ActionWithDirection extends Action {

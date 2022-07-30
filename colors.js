@@ -18,6 +18,11 @@ Colors.TileWallBG = "#826E32";
 Colors.TileWallDarkFG = Colors.White;
 Colors.TileWallDarkBG = "#000064";
 
+Colors.TileDownStairsFG = "#FFFFFF";
+Colors.TileDownStairsBG = "#C8B432";
+Colors.TileDownStairsDarkFG = "#000064";
+Colors.TileDownStairsDarkBG = "#323296";
+
 Colors.Player = "#FFFFFF";
 Colors.PlayerBG = Colors.TileFloorBG;
 
@@ -47,6 +52,7 @@ Colors.EnemyAttack = "#FFC0C0";
 
 Colors.NeedsTarget = "#3FFFFF";
 Colors.StatusEffectApplied = "#3FFF3F";
+Colors.Descend = "#9F3FFF";
 
 Colors.PlayerDie = "#FF3030";
 Colors.EnemyDie = "#FFA030";

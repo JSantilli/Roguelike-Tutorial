@@ -1,3 +1,4 @@
+'use strict';
 
 import { Map } from "./map.js";
 import { Tile } from "./tile.js";
@@ -8,11 +9,11 @@ import { Tile } from "./tile.js";
 // and you have to go to the import statement to understand where those functions are defined
 // bad namespacing, bad for understanding why you would use that function
 
-export function generateDungeon(mapWidth, mapHeight) {
+export function generateDungeon(mapWidth, mapHeight, roomMinSize, roomMaxSize) {
 
 	const diggerOptions = {
-		roomWidth: [6, 10],
-		roomHeight: [6, 10],
+		roomWidth: [roomMinSize, roomMaxSize],
+		roomHeight: [roomMinSize, roomMaxSize],
 	};
 
 	const digger = new ROT.Map.Digger(mapWidth, mapHeight, diggerOptions);
@@ -24,6 +25,10 @@ export function generateDungeon(mapWidth, mapHeight) {
 			map.tiles[x][y] = Tile.FloorTile;
 		}
 	});
+
+	const lastRoom = map.digger.getRooms()[map.digger.getRooms().length - 1];
+	const [downStairsX, downStairsY] = lastRoom.getCenter();
+	map.tiles[downStairsX][downStairsY] = Tile.DownStairsTile;
 
 	return map;
 }
@@ -48,12 +53,10 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 		if (i === 0) {
 			const [playerX, playerY] = room.getCenter();
 
-			const player = entityFactory.create("player", map, playerX, playerY);
+			const player = map.game.player;
+			player.setPosition(playerX, playerY, map);
 			map.setPlayer(player);
 			scheduler.add(player, true);
-
-			entityFactory.create("Confusion Scroll", map, playerX + 1, playerY);
-			entityFactory.create("Fireball Scroll", map, playerX + 1, playerY + 1);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 
