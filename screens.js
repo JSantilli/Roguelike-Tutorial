@@ -1,7 +1,7 @@
 'use strict';
 
 import { Colors } from "./colors.js";
-import { GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LookEventHandler, MainGameEventHandler, MainMenuEventHandler, ScrollingViewEventHandler, SingleRangedAttackHandler } from "./eventHandlers.js";
+import { AskUserEventHandler, GameOverEventHandler, InventoryActivateEventHandler, InventoryDropEventHandler, LevelUpEventHandler, LookEventHandler, MainGameEventHandler, MainMenuEventHandler, ScrollingViewEventHandler, SingleRangedAttackHandler } from "./eventHandlers.js";
 import { clearLine, drawCenteredText, drawFrame } from "./renderFunctions.js";
 
 // Maybe I should migrate Tile and Color to a similar pattern
@@ -380,5 +380,59 @@ ScreenDefinitions.AreaRangedAttack = {
 		drawFrame(this.game.display, this.cursorX - this.item.radius - 1, this.cursorY - this.item.radius - 1, this.item.radius ** 2, this.item.radius ** 2, Colors.Red, true);
 	},
 
+	exit: function () { }
+};
+
+ScreenDefinitions.LevelUp = {
+	eventHandlerClass: LevelUpEventHandler,
+
+	init: function () { },
+	
+	render: function () {
+
+		let x = 0;
+		if (this.game.map.player.x <= 30) {
+			x = 40;
+		}
+
+		drawFrame(this.game.display, x, 0, 35, 8, Colors.White, false);
+		drawCenteredText(this.game.display, x, 0, 35, "Level Up");
+
+		this.game.display.drawText(x + 1, 1, "Congratulations! You level up!");
+		this.game.display.drawText(x + 1, 2, "Select an attribute to increase.");
+
+		this.game.display.drawText(x + 1, 4, "a) Constitution (+20 HP, from " + this.game.map.player.maxHitPoints + ")");
+		this.game.display.drawText(x + 1, 5, "b) Strength (+1 attack, from " + this.game.map.player.power + ")");
+		this.game.display.drawText(x + 1, 6, "c) Agility (+1 defense, from " + this.game.map.player.defense + ")");
+	},
+	
+	exit: function () { }
+};
+
+ScreenDefinitions.CharacterInfo = {
+	eventHandlerClass: AskUserEventHandler,
+
+	init: function () { },
+	
+	render: function () {
+
+		let x = 0;
+		if (this.game.map.player.x <= 30) {
+			x = 40;
+		}
+
+		const title = "Character Information";
+		const width = title.length + 4;
+
+		drawFrame(this.game.display, x, 0, width, 7, Colors.White, false);
+		drawCenteredText(this.game.display, x, 0, width, title);
+
+		this.game.display.drawText(x + 1, 1, "Level: " + this.game.map.player.currentLevel);
+		this.game.display.drawText(x + 1, 2, "XP: " + this.game.map.player.currentXp);
+		this.game.display.drawText(x + 1, 3, "XP for next level: " + this.game.map.player.getXpToNextLevel());
+		this.game.display.drawText(x + 1, 4, "Attack: " + this.game.map.player.power);
+		this.game.display.drawText(x + 1, 5, "Defense: " + this.game.map.player.defense);
+	},
+	
 	exit: function () { }
 };
