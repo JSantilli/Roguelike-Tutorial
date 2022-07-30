@@ -9,10 +9,11 @@ import { InputHandler } from "./inputHandler.js";
 import { Map } from "./map.js";
 import { MessageLog } from "./messageLog.js";
 import { generateDungeon, placeEntities } from "./procgen.js";
-import { drawPopup, renderHealthBar } from "./renderFunctions.js";
+import { drawPopup, renderDungeonLevel, renderHealthBar } from "./renderFunctions.js";
 import { Screen } from "./screen.js";
 import { ScreenDefinitions } from "./screens.js";
 import { Tile } from "./tile.js";
+import { World } from "./world.js";
 
 export class Game {
 
@@ -31,7 +32,12 @@ export class Game {
 
 	screen;
 	
+	player;
+
 	map;
+
+	roomMinSize;
+	roomMaxSize;
 
 	// TODO: do these really need to be defined on the Game?
 	maxMonstersPerRoom;
@@ -46,6 +52,9 @@ export class Game {
 
 		this.mapWidth = 80;
 		this.mapHeight = 43;
+
+		this.roomMinSize = 6;
+		this.roomMaxSize = 10;
 
 		this.maxMonstersPerRoom = 2;
 		this.maxItemsPerRoom = 2;
@@ -74,6 +83,8 @@ export class Game {
 
 	start(savedMap = null) {
 
+		this.world = new World(this, this.mapWidth, this.mapHeight, this.roomMinSize, this.roomMaxSize, this.maxMonstersPerRoom, this.maxItemsPerRoom);
+
 		if (savedMap) {
 			this.loadMap(savedMap);
 		} else {
@@ -90,10 +101,7 @@ export class Game {
 
 	createNewMap() {
 
-		this.map = generateDungeon(this.mapWidth, this.mapHeight);
-		this.map.setGame(this);
-
-		placeEntities(this.map, this.maxMonstersPerRoom, this.maxItemsPerRoom, this.entityFactory, this.scheduler);
+		this.world.generateFloor();
 	}
 
 	loadMap(savedMap) {
@@ -238,6 +246,7 @@ export class Game {
 
 		if (createdEntity.name === "player") {
 			this.map.setPlayer(createdEntity);
+			this.player = createdEntity;
 		}
 
 		return createdEntity;
@@ -249,6 +258,7 @@ export class Game {
 		this.map.render(this.display);
 		this.messageLog.render(this.display, 21, 45, 40, 5);
 		renderHealthBar(this.display, this.map.player.hitPoints, this.map.player.maxHitPoints, 20);
+		renderDungeonLevel(this.display, this.world.currentFloor, 0, 47);
 	}
 
 	switchScreen(screenDefinition, item = null, user = null) {

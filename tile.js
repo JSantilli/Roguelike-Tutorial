@@ -54,3 +54,18 @@ Tile.WallTile = new Tile({
 	walkable: false,
 	transparent: false
 });
+
+Tile.DownStairsTile = new Tile({
+	glyphProperties: {
+		character: '>',
+		foreground: Colors.TileDownStairsFG,
+		background: Colors.TileDownStairsBG,
+		hasDarkGlyph: true,
+		darkProperties: {
+			foreground: Colors.TileDownStairsDarkFG,
+			background: Colors.TileDownStairsDarkBG
+		}
+	},
+	walkable: true,
+	transparent: true
+});

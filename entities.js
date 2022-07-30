@@ -23,6 +23,8 @@ const entityTemplates = [
 			{ power: 5 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 26 }],
+			[EntityMixins.ExperienceGainer,
+			{ levelUpBase : 200 }],
 		]
 	},
 
@@ -41,6 +43,8 @@ const entityTemplates = [
 			{ power: 3 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 0 }],
+			[EntityMixins.ExperienceGiver,
+			{ xpGiven : 35 }],
 		]
 	},
 
@@ -59,6 +63,8 @@ const entityTemplates = [
 			{ power: 4 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 0 }],
+			[EntityMixins.ExperienceGiver,
+			{ xpGiven : 100 }],
 		]
 	},
 

@@ -18,6 +18,10 @@ EntityMixins.PlayerActor = {
 		this.map.game.refresh();
 		this.map.game.engine.lock();
 
+		if (this.requiresLevelUp()) {
+			new ChangeViewAction(this.map.player, ScreenDefinitions.LevelUp).perform();
+		}
+
 		// This code is left here in case I need to refactor the player actor act function
 		// const actPromise = new Promise(
 		// 	(resolve, reject) => {
@@ -141,6 +145,93 @@ EntityMixins.HostileEnemy = {
 	}
 };
 
+EntityMixins.ExperienceGainer = {
+	name: "ExperienceGainer",
+
+	init({
+		currentLevel = 1,
+		currentXp = 0,
+		levelUpBase = 0,
+		levelUpFactor = 150
+	} = {}) {
+
+		this.currentLevel = currentLevel;
+		this.currentXp = currentXp;
+		this.levelUpBase = levelUpBase;
+		this.levelUpFactor = levelUpFactor;
+	},
+
+	getXpToNextLevel() {
+		
+		return this.levelUpBase + this.currentLevel * this.levelUpFactor;
+	},
+
+	requiresLevelUp() {
+
+		return this.currentXp >= this.getXpToNextLevel();
+	},
+
+	addXp(xp) {
+
+		if (xp === 0 || this.levelUpBase === 0) {
+			return;
+		}
+
+		this.currentXp += xp;
+
+		this.map.game.messageLog.addMessage("You gain " + xp + " experience points.");
+
+		if (this.requiresLevelUp()) {
+			this.map.game.messageLog.addMessage("You advance to level " + (this.currentLevel + 1) + "!");
+		}
+	},
+
+	increaseLevel() {
+
+		this.currentXp -= this.getXpToNextLevel();
+		this.currentLevel += 1;
+	},
+
+	increaseMaxHp(amount = 20) {
+
+		this.maxHitPoints += amount;
+		this.hitPoints += amount;
+
+		this.map.game.messageLog.addMessage("Your health improves!");
+
+		this.increaseLevel();
+	},
+
+	increasePower(amount = 1) {
+
+		this.power += amount;
+
+		this.map.game.messageLog.addMessage("You feel stronger!");
+
+		this.increaseLevel();
+	},
+
+	increaseDefense(amount = 1) {
+
+		this.defense += amount;
+
+		this.map.game.messageLog.addMessage("Your movements are getting swifter!");
+
+		this.increaseLevel();
+	}
+}
+
+EntityMixins.ExperienceGiver = {
+	name: "ExperienceGiver",
+
+	init({
+		xpGiven = 0
+	} = {}) {
+
+		this.xpGiven = xpGiven;
+	}
+}
+
 EntityMixins.Destructible = {
 	name: "Destructible",
 
@@ -205,6 +296,10 @@ EntityMixins.Destructible = {
 		}
 
 		this.map.game.messageLog.addMessage(deathMessage, deathMessageColor);
+
+		if (this.map.player.hasMixin("ExperienceGainer") && this.hasMixin("ExperienceGiver")) {
+			this.map.player.addXp(this.xpGiven);
+		}
 
 		this.isAlive = false;
 		this.blocksMovement = false;

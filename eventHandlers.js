@@ -1,6 +1,6 @@
 'use strict';
 
-import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction, AdjustCursorAction, SetCursorAction } from "./action.js";
+import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction, AdjustCursorAction, SetCursorAction, TakeStairsAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { clearLine } from "./renderFunctions.js";
@@ -77,6 +77,9 @@ export class MainGameEventHandler extends EventHandler {
 	inventoryKey;
 	dropKey;
 	lookKey;
+	saveKey;
+	descendKey;
+	characterInfoKey;
 
 	constructor(game) {
 		super(game);
@@ -92,6 +95,12 @@ export class MainGameEventHandler extends EventHandler {
 		this.dropKey = ROT.KEYS.VK_D;
 
 		this.lookKey = ROT.KEYS.VK_SLASH;
+
+		this.saveKey = ROT.KEYS.VK_S;
+
+		this.descendKey = ROT.KEYS.VK_PERIOD;
+
+		this.characterInfoKey = ROT.KEYS.VK_C;
 	}
 
 	handleKeydown(e) {
@@ -106,6 +115,10 @@ export class MainGameEventHandler extends EventHandler {
 		let shouldUnlock = false;
 
 		try {
+
+			if (keyCode === this.descendKey && e.shiftKey) {
+				new TakeStairsAction(this.game.map.player).perform();
+			}
 
 			if (keyCode in this.moveKeys) {
 				const [dx, dy] = ROT.DIRS[8][this.moveKeys[keyCode]];
@@ -139,8 +152,12 @@ export class MainGameEventHandler extends EventHandler {
 				new ChangeViewAction(this.game.map.player, ScreenDefinitions.Look).perform();
 			}
 
-			else if (keyCode === ROT.KEYS.VK_S) {
+			else if (keyCode === this.saveKey) {
 				this.game.saveGame();
+			}
+
+			else if (keyCode === this.characterInfoKey) {
+				new ChangeViewAction(this.game.map.player, ScreenDefinitions.CharacterInfo).perform();
 			}
 
 		} catch (e) {
@@ -375,5 +392,34 @@ export class SingleRangedAttackHandler extends SelectIndexEventHandler {
 	onIndexSelected() {
 
 		this.game.screen.callback(this.game.screen.item, this.game.screen.user, this.game.screen.cursorX, this.game.screen.cursorY);
+	}
+}
+
+export class LevelUpEventHandler extends AskUserEventHandler {
+
+	handleKeydown(e) {
+
+		const keyCode = e.keyCode;
+
+		const index = keyCode - ROT.KEYS.VK_A;
+
+		if (0 <= index && index <= 2) {
+			if (index === 0) {
+				this.game.map.player.increaseMaxHp();
+			} else if (index === 1) {
+				this.game.map.player.increasePower();
+			} else if (index === 2) {
+				this.game.map.player.increaseDefense();
+			} else {
+				this.game.messageLog.addMessage("Invalid entry.", Colors.Invalid);
+				return;
+			}
+			super.handleKeydown(e);
+		}
+	}
+
+	handleClick(e) {
+
+		return;
 	}
 }

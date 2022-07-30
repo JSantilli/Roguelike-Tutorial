@@ -24,6 +24,11 @@ function drawBar(display, x, y, width, color) {
 	display.drawText(x, y, rowString);
 }
 
+export function renderDungeonLevel(display, dungeonLevel, x, y) {
+
+	display.drawText(x, y, "Dungeon level: " + dungeonLevel);
+}
+
 export function drawFrame(display, x, y, width, height, color = Colors.White, transparent = false) {
 
 	// const decoration = "┌─┐│ │└─┘";
