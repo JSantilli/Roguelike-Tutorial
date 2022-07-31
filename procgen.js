@@ -9,6 +9,32 @@ import { Tile } from "./tile.js";
 // and you have to go to the import statement to understand where those functions are defined
 // bad namespacing, bad for understanding why you would use that function
 
+const maxItemsByFloor = [
+	{floor: 1, value: 1},
+	{floor: 4, value: 2}
+];
+
+const maxMonstersByFloor = [
+	{floor: 1, value: 2},
+	{floor: 4, value: 3},
+	{floor: 6, value: 5}
+];
+
+function getMaxValueForFloor(maxValueByFloorList, floor) {
+
+	let currentValue = 0;
+
+	for (let {floorMinimum, value} of maxValueByFloorList) {
+		if (floorMinimum > floor) {
+			break;
+		} else {
+			currentValue = value;
+		}
+	}
+
+	return currentValue;
+}
+
 export function generateDungeon(mapWidth, mapHeight, roomMinSize, roomMaxSize) {
 
 	const diggerOptions = {
@@ -33,7 +59,10 @@ export function generateDungeon(mapWidth, mapHeight, roomMinSize, roomMaxSize) {
 	return map;
 }
 
-export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFactory, scheduler) {
+export function placeEntities(map, floorNumber, entityFactory, scheduler) {
+
+	const maxMonstersPerRoom = getMaxValueForFloor(maxMonstersByFloor, floorNumber);
+	const maxItemsPerRoom = getMaxValueForFloor(maxItemsByFloor, floorNumber);
 
 	const monsters = { // TODO: I probably want to create this weighted list from the entity factory list
 		"orc": 80,

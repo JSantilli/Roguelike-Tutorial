@@ -9,9 +9,6 @@ export class World {
 
 	roomMinSize;
 	roomMaxSize;
-	
-	maxMonstersPerRoom;
-	maxItemsPerRoom;
 
 	currentFloor;
 
@@ -21,8 +18,6 @@ export class World {
 		mapHeight,
 		roomMinSize,
 		roomMaxSize,
-		maxMonstersPerRoom,
-		maxItemsPerRoom,
 		currentFloor = 0
 	) {
 
@@ -33,9 +28,6 @@ export class World {
 
 		this.roomMinSize = roomMinSize;
 		this.roomMaxSize = roomMaxSize;
-
-		this.maxMonstersPerRoom = maxMonstersPerRoom;
-		this.maxItemsPerRoom = maxItemsPerRoom;
 
 		this.currentFloor = currentFloor;
 	}
@@ -51,6 +43,6 @@ export class World {
 			this.game.player = this.game.entityFactory.create("player", this.game.map, -1, -1);
 		}
 
-		placeEntities(this.game.map, this.maxMonstersPerRoom, this.maxItemsPerRoom, this.game.entityFactory, this.game.scheduler);
+		placeEntities(this.game.map, this.currentFloor, this.game.entityFactory, this.game.scheduler);
 	}
 }
