@@ -1,6 +1,6 @@
 'use strict';
 
-import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction, AdjustCursorAction, SetCursorAction, TakeStairsAction } from "./action.js";
+import { BumpAction, ScrollAction, ChangeViewAction, WaitAction, PickupAction, DropAction, ItemAction, AdjustCursorAction, SetCursorAction, TakeStairsAction, EquipAction } from "./action.js";
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
 import { clearLine } from "./renderFunctions.js";
@@ -287,7 +287,11 @@ export class InventoryActivateEventHandler extends InventoryEventHandler {
 	onItemSelected(item) {
 
 		try {
-			new ItemAction(this.game.map.player, item).perform();
+			if (item.hasMixin("Consumable")) {
+				new ItemAction(this.game.map.player, item).perform();
+			} else {
+				new EquipAction(this.game.map.player, item).perform();
+			}
 		} catch (e) {
 			if (e instanceof ImpossibleError) {
 				this.game.messageLog.addMessage(e.message, Colors.Impossible);

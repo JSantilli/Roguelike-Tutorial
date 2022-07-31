@@ -139,7 +139,11 @@ ScreenDefinitions.InventoryActivate = {
 			for (let i = 0; i < this.inventory.length; i++) {
 				const itemKey = String.fromCharCode("a".charCodeAt() + i);
 				const item = this.inventory[i];
-				const itemString = "(" + itemKey + ") " + item.name;
+				const isEquipped = this.game.map.player.isEquipped(item);
+				let itemString = "(" + itemKey + ") " + item.name;
+				if (isEquipped) {
+					itemString += " (E)";
+				}
 				this.display.drawText(1, i + 1, itemString);
 			}
 		} else {
@@ -195,7 +199,11 @@ ScreenDefinitions.InventoryDrop = {
 			for (let i = 0; i < this.inventory.length; i++) {
 				const itemKey = String.fromCharCode("a".charCodeAt() + i);
 				const item = this.inventory[i];
-				const itemString = "(" + itemKey + ") " + item.name;
+				const isEquipped = this.game.map.player.isEquipped(item);
+				let itemString = "(" + itemKey + ") " + item.name;
+				if (isEquipped) {
+					itemString += " (E)";
+				}
 				this.display.drawText(1, i + 1, itemString);
 			}
 		} else {
@@ -402,8 +410,8 @@ ScreenDefinitions.LevelUp = {
 		this.game.display.drawText(x + 1, 2, "Select an attribute to increase.");
 
 		this.game.display.drawText(x + 1, 4, "a) Constitution (+20 HP, from " + this.game.map.player.maxHitPoints + ")");
-		this.game.display.drawText(x + 1, 5, "b) Strength (+1 attack, from " + this.game.map.player.power + ")");
-		this.game.display.drawText(x + 1, 6, "c) Agility (+1 defense, from " + this.game.map.player.defense + ")");
+		this.game.display.drawText(x + 1, 5, "b) Strength (+1 attack, from " + this.game.map.player.basePower + ")");
+		this.game.display.drawText(x + 1, 6, "c) Agility (+1 defense, from " + this.game.map.player.baseDefense + ")");
 	},
 	
 	exit: function () { }
@@ -430,8 +438,8 @@ ScreenDefinitions.CharacterInfo = {
 		this.game.display.drawText(x + 1, 1, "Level: " + this.game.map.player.currentLevel);
 		this.game.display.drawText(x + 1, 2, "XP: " + this.game.map.player.currentXp);
 		this.game.display.drawText(x + 1, 3, "XP for next level: " + this.game.map.player.getXpToNextLevel());
-		this.game.display.drawText(x + 1, 4, "Attack: " + this.game.map.player.power);
-		this.game.display.drawText(x + 1, 5, "Defense: " + this.game.map.player.defense);
+		this.game.display.drawText(x + 1, 4, "Attack: " + this.game.map.player.getPower());
+		this.game.display.drawText(x + 1, 5, "Defense: " + this.game.map.player.getDefense());
 	},
 	
 	exit: function () { }
