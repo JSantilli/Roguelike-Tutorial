@@ -2,6 +2,7 @@
 
 import { Colors } from "./colors.js";
 import { EntityMixins } from "./entityMixins.js";
+import { EquipmentTypes } from "./equipmentTypes.js";
 import { RenderOrder } from "./renderOrder.js";
 
 // TODO: maybe this ends up being a raw json file instead of json being defined in a list?
@@ -18,13 +19,14 @@ const entityTemplates = [
 		mixins: [
 			[EntityMixins.PlayerActor],
 			[EntityMixins.Destructible,
-			{ maxHitPoints: 30, defense: 2 }],
+			{ maxHitPoints: 30, baseDefense: 1 }],
 			[EntityMixins.Attacker,
-			{ power: 5 }],
+			{ basePower: 2 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 26 }],
 			[EntityMixins.ExperienceGainer,
 			{ levelUpBase : 200 }],
+			[EntityMixins.Equipper]
 		]
 	},
 
@@ -38,13 +40,14 @@ const entityTemplates = [
 		mixins: [
 			[EntityMixins.HostileEnemy],
 			[EntityMixins.Destructible,
-			{ maxHitPoints: 10, defense: 0 }],
+			{ maxHitPoints: 10, baseDefense: 0 }],
 			[EntityMixins.Attacker,
-			{ power: 3 }],
+			{ basePower: 3 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 0 }],
 			[EntityMixins.ExperienceGiver,
 			{ xpGiven : 35 }],
+			[EntityMixins.Equipper]
 		]
 	},
 
@@ -58,13 +61,14 @@ const entityTemplates = [
 		mixins: [
 			[EntityMixins.HostileEnemy],
 			[EntityMixins.Destructible,
-			{ maxHitPoints: 16, defense: 1 }],
+			{ maxHitPoints: 16, baseDefense: 1 }],
 			[EntityMixins.Attacker,
-			{ power: 4 }],
+			{ basePower: 4 }],
 			[EntityMixins.InventoryHolder,
 			{ inventoryCapacity: 0 }],
 			[EntityMixins.ExperienceGiver,
 			{ xpGiven : 100 }],
+			[EntityMixins.Equipper]
 		]
 	},
 
@@ -124,6 +128,57 @@ const entityTemplates = [
 		]
 	},
 
+	{
+		name: "Dagger",
+		character: "/",
+		foreground: Colors.Weapon,
+		background: Colors.WeaponBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.Equippable,
+			{ equipmentType: EquipmentTypes.Weapon, powerBonus: 2 }]
+		]
+	},
+
+	{
+		name: "Sword",
+		character: "/",
+		foreground: Colors.Weapon,
+		background: Colors.WeaponBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.Equippable,
+			{ equipmentType: EquipmentTypes.Weapon, powerBonus: 4 }]
+		]
+	},
+
+	{
+		name: "Leather Armor",
+		character: "[",
+		foreground: Colors.Armor,
+		background: Colors.ArmorBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.Equippable,
+			{ equipmentType: EquipmentTypes.Armor, defenseBonus: 1 }]
+		]
+	},
+
+	{
+		name: "Chain Mail",
+		character: "[",
+		foreground: Colors.Armor,
+		background: Colors.ArmorBG,
+		renderOrder: RenderOrder.Item,
+		blocksMovement: false,
+		mixins: [
+			[EntityMixins.Equippable,
+			{ equipmentType: EquipmentTypes.Armor, defenseBonus: 3 }]
+		]
+	},
 ];
 
 /* 
@@ -132,7 +187,6 @@ every enemy was totally randomly generated from a set of mixins
 
 Have a large set of behaviors that can be 'randomly' pulled in to create a new monster that no one has ever seen before
 */
-
 
 export function defineEntities(factory) {
 	factory.importDefinitions(entityTemplates);

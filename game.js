@@ -86,6 +86,17 @@ export class Game {
 		this.messageLog = new MessageLog();
 		this.messageLog.addMessage("Hello and welcome, adventurer, to yet another dungeon!", Colors.WelcomeText, false);
 
+		const startingDagger = this.entityFactory.create("Dagger", this.map, 0, 0);
+		const startingLeatherArmor = this.entityFactory.create("Leather Armor", this.map, 0, 0);
+
+		this.map.removeEntity(startingDagger);
+		this.map.player.inventory.push(startingDagger);
+		this.map.player.toggleEquip(startingDagger, false);
+		
+		this.map.removeEntity(startingLeatherArmor);
+		this.map.player.inventory.push(startingLeatherArmor);
+		this.map.player.toggleEquip(startingLeatherArmor, false);
+
 		this.switchScreen(ScreenDefinitions.MainGame);
 
 		this.engine.start();
@@ -142,7 +153,7 @@ export class Game {
 				{
 					maxHitPoints: entity.maxHitPoints,
 					hitPoints: entity.hitPoints,
-					defense: entity.defense,
+					baseDefense: entity.baseDefense,
 					isAlive: entity.isAlive
 				}]
 			);
@@ -152,7 +163,7 @@ export class Game {
 			mixins.push(
 				[EntityMixins.Attacker,
 				{
-					power: entity.power
+					basePower: entity.basePower
 				}]
 			);
 		}

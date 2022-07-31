@@ -2,6 +2,7 @@
 
 import { Colors } from "./colors.js";
 import { ImpossibleError } from "./exceptions.js";
+import { ScreenDefinitions } from "./screens.js";
 import { Tile } from "./tile.js";
 
 export class Action {
@@ -178,7 +179,7 @@ export class MeleeAction extends ActionWithDirection {
 			const attackDescription = ROT.Util.capitalize(this.entity.name) + " attacks " + target.name;
 			let attackMessage;
 
-			const damage = this.entity.power - target.defense;
+			const damage = this.entity.getPower() - target.getDefense();
 			if (damage > 0) {
 				attackMessage = attackDescription + " for " + damage + " hit points.";
 			} else {
@@ -256,7 +257,31 @@ export class DropAction extends ItemAction {
 
 	perform() {
 
+		if (this.entity.hasMixin("Equipper")) {
+			if (this.entity.isEquipped(this.item)) {
+				this.entity.toggleEquip(this.item, true);
+			}
+		}
+
 		this.entity.dropItem(this.item);
+	}
+}
+
+export class EquipAction extends Action {
+
+	item;
+
+	constructor(entity, item) {
+		super(entity);
+
+		this.item = item;
+	}
+
+	perform() {
+
+		this.entity.toggleEquip(this.item, true);
+
+		new ChangeViewAction(this.entity, ScreenDefinitions.MainGame).perform();
 	}
 }
 

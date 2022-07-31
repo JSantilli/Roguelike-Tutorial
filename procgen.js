@@ -33,12 +33,14 @@ const itemWeightsByFloor = [
 	},
 	{
 		floor: 4, weights: [
-			{ value: "Lightning Scroll", weight: 25 }
+			{ value: "Lightning Scroll", weight: 25 },
+			{ value: "Sword", weight: 5 },
 		]
 	},
 	{
 		floor: 6, weights: [
-			{ value: "Fireball Scroll", weight: 25 }
+			{ value: "Fireball Scroll", weight: 25 },
+			{ value: "Chain Mail", weight: 15 },
 		]
 	}
 ];
@@ -142,6 +144,9 @@ export function placeEntities(map, floorNumber, entityFactory, scheduler) {
 			player.setPosition(playerX, playerY, map);
 			map.setPlayer(player);
 			scheduler.add(player, true);
+
+			entityFactory.create("Dagger", map, playerX, playerY + 1);
+			entityFactory.create("Leather Armor", map, playerX, playerY + 2);
 		} else {
 			const numberOfMonsters = getRandomInt(0, maxMonstersPerRoom);
 

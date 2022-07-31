@@ -47,6 +47,12 @@ Colors.ConfusionScrollBG = Colors.TileFloorBG;
 Colors.FireballScroll = "#FF0000";
 Colors.FireballScrollBG = Colors.TileFloorBG;
 
+Colors.Weapon = "#00BFFF";
+Colors.WeaponBG = Colors.TileFloorBG;
+
+Colors.Armor = "#8B4513";
+Colors.ArmorBG = Colors.TileFloorBG;
+
 Colors.PlayerAttack = "#E0E0E0";
 Colors.EnemyAttack = "#FFC0C0";
 

@@ -2,6 +2,7 @@
 
 import { ApplyStatusEffectAction, BumpAction, ChangeViewAction, MeleeAction, MoveAction, WaitAction } from "./action.js";
 import { Colors } from "./colors.js";
+import { EquipmentTypes } from "./equipmentTypes.js";
 import { ImpossibleError } from "./exceptions.js";
 import { Glyph } from "./glyph.js";
 import { RenderOrder } from "./renderOrder.js";
@@ -204,7 +205,7 @@ EntityMixins.ExperienceGainer = {
 
 	increasePower(amount = 1) {
 
-		this.power += amount;
+		this.basePower += amount;
 
 		this.map.game.messageLog.addMessage("You feel stronger!");
 
@@ -213,7 +214,7 @@ EntityMixins.ExperienceGainer = {
 
 	increaseDefense(amount = 1) {
 
-		this.defense += amount;
+		this.baseDefense += amount;
 
 		this.map.game.messageLog.addMessage("Your movements are getting swifter!");
 
@@ -238,14 +239,25 @@ EntityMixins.Destructible = {
 	init({
 		maxHitPoints = 10,
 		hitPoints,
-		defense,
+		baseDefense,
 		isAlive = true
 	} = {}) {
 
 		this.maxHitPoints = maxHitPoints;
 		this.hitPoints = Math.min(hitPoints || maxHitPoints, maxHitPoints);
-		this.defense = defense;
+		this.baseDefense = baseDefense;
 		this.isAlive = isAlive
+	},
+
+	getDefense() {
+
+		let defense = this.baseDefense;
+
+		if (this.hasMixin("Equipper")) {
+			defense += this.getDefenseBonus();
+		}
+
+		return defense;
 	},
 
 	setHitPoints(value) {
@@ -313,10 +325,21 @@ EntityMixins.Attacker = {
 	name: "Attacker",
 
 	init({
-		power
+		basePower
 	} = {}) {
 
-		this.power = power;
+		this.basePower = basePower;
+	},
+
+	getPower() {
+
+		let power = this.basePower;
+
+		if (this.hasMixin("Equipper")) {
+			power += this.getPowerBonus();
+		}
+
+		return power;
 	}
 }
 
@@ -557,5 +580,136 @@ EntityMixins.BurnAreaItem = {
 		new ChangeViewAction(user, ScreenDefinitions.MainGame).perform();
 
 		user.map.game.refresh();
+	}
+}
+
+EntityMixins.Equippable = {
+	name: "Equippable",
+	group: "Item",
+
+	init({
+		equipmentType,
+		powerBonus = 0,
+		defenseBonus = 0
+	} = {}) {
+
+		this.equipmentType = equipmentType;
+		this.powerBonus = powerBonus;
+		this.defenseBonus = defenseBonus;
+	}
+}
+
+EntityMixins.Equipper = {
+	name: "Equipper",
+
+	init({
+		weapon = null,
+		armor = null
+	} = {}) {
+
+		this.weapon = weapon;
+		this.armor = armor;
+	},
+
+	getDefenseBonus() {
+
+		let bonus = 0;
+
+		if (this.weapon) {
+			bonus += this.weapon.defenseBonus;
+		}
+
+		if (this.armor) {
+			bonus += this.armor.defenseBonus;
+		}
+
+		return bonus;
+	},
+
+	getPowerBonus() {
+
+		let bonus = 0;
+
+		if (this.weapon) {
+			bonus += this.weapon.powerBonus;
+		}
+
+		if (this.armor) {
+			bonus += this.armor.powerBonus;
+		}
+
+		return bonus;
+	},
+
+	isEquipped(item) {
+
+		if (item === this.weapon) {
+			return true;
+		}
+
+		if (item === this.armor) {
+			return true;
+		}
+
+		return false;
+	},
+
+	equip(item, addMessage) {
+
+		let itemEquipped = false;
+
+		if (item.equipmentType === EquipmentTypes.Weapon) {
+
+			if (this.weapon) {
+				this.unequip(this.weapon);
+			}
+
+			this.weapon = item;
+			itemEquipped = true;
+		}
+
+		if (item.equipmentType === EquipmentTypes.Armor) {
+
+			if (this.armor) {
+				this.unequip(this.armor);
+			}
+
+			this.armor = item;
+			itemEquipped = true;
+		}
+
+		if (itemEquipped && addMessage) {
+			this.map.game.messageLog.addMessage("You equip the " + item.name);
+		}
+	},
+
+	unequip(item, addMessage) {
+
+		let itemUnequiped = false;
+
+		if (item === this.weapon) {
+			this.weapon = null;
+			itemUnequiped = true;
+		}
+
+		if (item === this.armor) {
+			this.armor = null;
+			itemUnequiped = true;
+		}
+
+		if (itemUnequiped && addMessage) {
+			this.map.game.messageLog.addMessage("You remove the " + item.name);
+		}
+	},
+
+	toggleEquip(item, addMessage) {
+
+		if (item.hasMixin("Equippable")) {
+			if (this.isEquipped(item)) {
+				this.unequip(item, addMessage);
+			} else {
+				this.equip(item, addMessage);
+			}
+		}
 	}
 }
