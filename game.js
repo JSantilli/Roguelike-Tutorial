@@ -8,7 +8,6 @@ import { Factory } from "./factory.js";
 import { InputHandler } from "./inputHandler.js";
 import { Map } from "./map.js";
 import { MessageLog } from "./messageLog.js";
-import { generateDungeon, placeEntities } from "./procgen.js";
 import { drawPopup, renderDungeonLevel, renderHealthBar } from "./renderFunctions.js";
 import { Screen } from "./screen.js";
 import { ScreenDefinitions } from "./screens.js";
@@ -39,10 +38,6 @@ export class Game {
 	roomMinSize;
 	roomMaxSize;
 
-	// TODO: do these really need to be defined on the Game?
-	maxMonstersPerRoom;
-	maxItemsPerRoom;
-
 	entityFactory;
 
 	constructor() {
@@ -55,9 +50,6 @@ export class Game {
 
 		this.roomMinSize = 6;
 		this.roomMaxSize = 10;
-
-		this.maxMonstersPerRoom = 2;
-		this.maxItemsPerRoom = 2;
 
 		const displayOptions = {
 			width: this.screenWidth,
@@ -83,7 +75,7 @@ export class Game {
 
 	start(savedMap = null) {
 
-		this.world = new World(this, this.mapWidth, this.mapHeight, this.roomMinSize, this.roomMaxSize, this.maxMonstersPerRoom, this.maxItemsPerRoom);
+		this.world = new World(this, this.mapWidth, this.mapHeight, this.roomMinSize, this.roomMaxSize);
 
 		if (savedMap) {
 			this.loadMap(savedMap);
@@ -105,8 +97,6 @@ export class Game {
 	}
 
 	loadMap(savedMap) {
-
-		console.log(savedMap);
 
 		this.map = new Map(savedMap.width, savedMap.height);
 

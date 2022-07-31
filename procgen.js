@@ -9,6 +9,95 @@ import { Tile } from "./tile.js";
 // and you have to go to the import statement to understand where those functions are defined
 // bad namespacing, bad for understanding why you would use that function
 
+const maxItemsByFloor = [
+	{floor: 1, value: 1},
+	{floor: 4, value: 2}
+];
+
+const maxMonstersByFloor = [
+	{floor: 1, value: 2},
+	{floor: 4, value: 3},
+	{floor: 6, value: 5}
+];
+
+const itemWeightsByFloor = [
+	{
+		floor: 0, weights: [
+			{ value: "Health Potion", weight: 35 }
+		]
+	},
+	{
+		floor: 2, weights: [
+			{ value: "Confusion Scroll", weight: 10 }
+		]
+	},
+	{
+		floor: 4, weights: [
+			{ value: "Lightning Scroll", weight: 25 }
+		]
+	},
+	{
+		floor: 6, weights: [
+			{ value: "Fireball Scroll", weight: 25 }
+		]
+	}
+];
+
+const monsterWeightsByFloor = [
+	{
+		floor: 0, weights: [
+			{ value: "orc", weight: 80 }
+		]
+	},
+	{
+		floor: 3, weights: [
+			{ value: "troll", weight: 15 }
+		]
+	},
+	{
+		floor: 5, weights: [
+			{ value: "troll", weight: 30 }
+		]
+	},
+	{
+		floor: 7, weights: [
+			{ value: "troll", weight: 60 }
+		]
+	}
+];
+
+function getMaxValueForFloor(maxValueByFloorList, currentFloor) {
+
+	let currentValue = 0;
+
+	for (let {floor, value} of maxValueByFloorList) {
+		if (floor > currentFloor) {
+			break;
+		} else {
+			currentValue = value;
+		}
+	}
+
+	return currentValue;
+}
+
+function getWeightedSpawnsForFloor(weightsByFloorList, currentFloor) {
+
+	const currentWeights = {};
+
+	for (let {floor, weights} of weightsByFloorList) {
+		if (floor > currentFloor) {
+			break;
+		} else {
+			for (let {value, weight} of weights) {
+				currentWeights[value] = weight;
+			}
+		}
+	}
+
+	return currentWeights;
+}
+
 export function generateDungeon(mapWidth, mapHeight, roomMinSize, roomMaxSize) {
 
 	const diggerOptions = {
@@ -33,19 +122,15 @@ export function generateDungeon(mapWidth, mapHeight, roomMinSize, roomMaxSize) {
 	return map;
 }
 
-export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFactory, scheduler) {
+export function placeEntities(map, floorNumber, entityFactory, scheduler) {
 
-	const monsters = { // TODO: I probably want to create this weighted list from the entity factory list
-		"orc": 80,
-		"troll": 20
-	};
+	scheduler.clear();
 
-	const items = {
-		"Health Potion": 70,
-		"Fireball Scroll": 10,
-		"Confusion Scroll": 10,
-		"Lightning Scroll": 10
-	};
+	const maxMonstersPerRoom = getMaxValueForFloor(maxMonstersByFloor, floorNumber);
+	const maxItemsPerRoom = getMaxValueForFloor(maxItemsByFloor, floorNumber);
+
+	const monsterWeights = getWeightedSpawnsForFloor(monsterWeightsByFloor, floorNumber);
+	const itemWeights = getWeightedSpawnsForFloor(itemWeightsByFloor, floorNumber);
 
 	for (let i = 0; i < map.digger.getRooms().length; i++) {
 		const room = map.digger.getRooms()[i];
@@ -68,7 +153,7 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
 				} while (!map.isEmptyTile(x, y));
 
-				const monsterString = ROT.RNG.getWeightedValue(monsters);
+				const monsterString = ROT.RNG.getWeightedValue(monsterWeights);
 				const monster = entityFactory.create(monsterString, map, x, y);
 				scheduler.add(monster, true); // TODO: should the factory create method do this?
 			}
@@ -83,7 +168,7 @@ export function placeEntities(map, maxMonstersPerRoom, maxItemsPerRoom, entityFa
 					y = getRandomInt(room.getTop() + 1, room.getBottom() - 1);
 				} while (!map.isEmptyTile(x, y));
 
-				const itemString = ROT.RNG.getWeightedValue(items);
+				const itemString = ROT.RNG.getWeightedValue(itemWeights);
 				entityFactory.create(itemString, map, x, y);
 			}
 		}
